@@ -2,3 +2,7 @@
 .angular/
 node_modules/
 dist/
+
+# OS junk
+.DS_Store
+Thumbs.db
