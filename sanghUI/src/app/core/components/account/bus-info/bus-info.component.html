@@ -1,0 +1,350 @@
+<!-- src/app/pages/bus-info/bus-info.component.html -->
+<div class="rrpg-root" style="background:#f3f4f6;">
+  <!-- ===== iOS + Android Compatibility Styles (inline for easy copy/paste) ===== -->
+  <style>
+    * { box-sizing: border-box; }
+
+    :root{
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    /* Root: fix iOS 100vh issues */
+    .rrpg-root{
+      width: 100%;
+      min-height: 100vh;   /* fallback */
+      min-height: 100dvh;  /* correct on modern iOS/Android */
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      overflow-x: clip; /* stops random iOS horizontal scroll */
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Topbar: safe-area padding to avoid notch + sticky stability */
+    .rrpg-topbar{
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+
+      /* ✅ notch-safe */
+      padding-top: calc(0.75rem + var(--safe-top));
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: 0.75rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      /* ✅ iOS sticky flicker fix */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    /* Content padding: include bottom safe area so last card doesn't hide behind home bar */
+    .rrpg-main{
+      flex: 1;
+      padding: 1.25rem 1rem calc(1.25rem + var(--safe-bottom));
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Improve tap targets on iOS */
+    .rrpg-back-btn{
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      padding: 6px 6px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .rrpg-back-circle{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+  </style>
+
+  <!-- Topbar -->
+  <header class="rrpg-topbar">
+    <button (click)="goBack()" class="rrpg-back-btn" aria-label="Back">
+      <div class="rrpg-back-circle">←</div>
+      <span style="font-size: 0.85rem; color: #374151">Back</span>
+    </button>
+
+    <strong style="font-size: 1rem; color: #111827">Bus Information</strong>
+
+    <div style="width: 70px"></div>
+  </header>
+
+  <!-- Main -->
+  <div class="rrpg-main">
+    <div style="width: 100%; max-width: 480px;">
+      <!-- Bus Hero: inbound & outbound side-by-side -->
+      <section
+        style="
+          background: #fff;
+          border-radius: 20px;
+          padding: 1.5rem 1.25rem;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 16px 40px rgba(15,23,42,0.07);
+          margin-bottom: 1.25rem;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+          "
+        >
+          <!-- To Venue -->
+          <div style="flex: 1; text-align: left;">
+            <div
+              style="
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                color: #6b7280;
+                margin-bottom: 0.4rem;
+                line-height: 1.2;
+              "
+            >
+              <span style="display:block;">Bus to</span>
+              <span style="display:block;">Palitana</span>
+            </div>
+            <div style="font-size: 1.8rem; font-weight: 900; color: #111827;">
+              {{ busInbound || '—' }}
+            </div>
+          </div>
+
+          <!-- Return -->
+          <div style="flex: 1; text-align: right;">
+            <div
+              style="
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                color: #6b7280;
+                margin-bottom: 0.4rem;
+                line-height: 1.2;
+              "
+            >
+              <span style="display:block;">Bus to</span>
+              <span style="display:block;">Ahmedabad</span>
+            </div>
+            <div style="font-size: 1.8rem; font-weight: 900; color: #111827;">
+              {{ busOutbound || '—' }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loading state -->
+      <div *ngIf="isLoadingInbound || isLoadingOutbound" style="margin-bottom: 1rem; color:#4b5563;">
+        Loading bus members…
+      </div>
+
+      <!-- Inbound Bus Members -->
+      <section
+        style="
+          background: #fff;
+          border-radius: 20px;
+          padding: 1.5rem;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 10px 30px rgba(15,23,42,0.05);
+          margin-bottom: 1.25rem;
+        "
+      >
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <div>
+            <h2 style="font-size: 1.05rem; font-weight: 700; margin: 0;">
+              Bus Members (Palitana)
+            </h2>
+            <p style="margin: 0.15rem 0 0; color: #6b7280;"></p>
+          </div>
+
+          <span
+            style="
+              padding: 0.2rem 0.8rem;
+              background: #eff6ff;
+              color: #1d4ed8;
+              border-radius: 999px;
+              font-size: 0.75rem;
+              font-weight: 600;
+            "
+          >
+            {{ inboundMembers.length }} PAX
+          </span>
+        </div>
+
+        <div *ngIf="errorInbound" style="color:#b91c1c; font-size:0.85rem;">
+          {{ errorInbound }}
+        </div>
+
+        <div
+          *ngIf="!errorInbound && inboundMembers.length > 0"
+          style="display: flex; flex-direction: column; gap: 0.75rem;"
+        >
+          <div
+            *ngFor="let m of inboundMembers; let i = index"
+            style="
+              background: #f9fafb;
+              border-radius: 14px;
+              border: 1px solid #e5e7eb;
+              padding: 0.85rem;
+              display: flex;
+              gap: 0.75rem;
+              align-items: center;
+            "
+          >
+            <div
+              style="
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #ecfdf5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 0.9rem;
+                color: #16a34a;
+              "
+            >
+              {{ getInitials(m.fullName) }}
+            </div>
+
+            <div style="flex: 1;">
+              <div style="font-size: 0.92rem; font-weight: 600; color: #111827;">
+                {{ m.fullName }}
+              </div>
+
+              <div style="font-size: 0.78rem; color: #374151; margin-top: 2px;">
+                📱 {{ m.mobile }}
+              </div>
+
+              <div style="font-size: 0.7rem; color: #9ca3af; margin-top: 2px;">
+                YATRIK {{ i + 1 }}
+              </div>
+            </div>
+
+            <div style="font-size: 0.75rem; color: #6b7280;">
+              Bus {{ busInbound || '—' }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Outbound Bus Members -->
+      <section
+        style="
+          background: #fff;
+          border-radius: 20px;
+          padding: 1.5rem;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 10px 30px rgba(15,23,42,0.05);
+          margin-bottom: 1.5rem;
+        "
+      >
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <div>
+            <h2 style="font-size: 1.05rem; font-weight: 700; margin: 0;">
+              Bus Members (Ahmedabad)
+            </h2>
+            <p style="margin: 0.15rem 0 0; color: #6b7280;"></p>
+          </div>
+
+          <span
+            style="
+              padding: 0.2rem 0.8rem;
+              background: #ecfdf3;
+              color: #166534;
+              border-radius: 999px;
+              font-size: 0.75rem;
+              font-weight: 600;
+            "
+          >
+            {{ outboundMembers.length }} PAX
+          </span>
+        </div>
+
+        <div *ngIf="errorOutbound" style="color:#b91c1c; font-size:0.85rem;">
+          {{ errorOutbound }}
+        </div>
+
+        <div
+          *ngIf="!errorOutbound && outboundMembers.length > 0"
+          style="display: flex; flex-direction: column; gap: 0.75rem;"
+        >
+          <div
+            *ngFor="let m of outboundMembers; let i = index"
+            style="
+              background: #f9fafb;
+              border-radius: 14px;
+              border: 1px solid #e5e7eb;
+              padding: 0.85rem;
+              display: flex;
+              gap: 0.75rem;
+              align-items: center;
+            "
+          >
+            <div
+              style="
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #eff6ff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 0.9rem;
+                color: #2563eb;
+              "
+            >
+              {{ getInitials(m.fullName) }}
+            </div>
+
+            <div style="flex: 1;">
+              <div style="font-size: 0.92rem; font-weight: 600; color: #111827;">
+                {{ m.fullName }}
+              </div>
+
+              <div style="font-size: 0.78rem; color: #374151; margin-top: 2px;">
+                📱 {{ m.mobile }}
+              </div>
+
+              <div style="font-size: 0.7rem; color: #9ca3af; margin-top: 2px;">
+                YATRIK {{ i + 1 }}
+              </div>
+            </div>
+
+            <div style="font-size: 0.75rem; color: #6b7280;">
+              Bus {{ busOutbound || '—' }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>

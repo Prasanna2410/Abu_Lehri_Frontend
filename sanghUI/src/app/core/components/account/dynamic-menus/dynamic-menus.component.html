@@ -1,0 +1,23 @@
+<div id="bdSidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-success text-white offcanvas-md offcanvas-start menu-container">
+  <a href="dashboard" class="navbar-brand">
+    sangh
+  </a>
+  <hr>
+  <ul class="mynav nav nav-pills flex-column mb-auto">
+    <li class="nav-item mb-1" *ngFor="let item of resourceNames">
+      <a [routerLink]="['/', item.pageName]" class="text-white nav-link">
+        <i [class]="item.icon + ' me-2'"></i>
+        {{ item.displayName }}
+      </a>
+    </li>
+  </ul>
+  <hr>
+  <div class="d-flex">
+    <i class="fa-solid fa-book me-2"></i>
+    <span>
+      <h6 class="mt-1 mb-0">
+        sangh
+      </h6>
+    </span>
+  </div>
+</div>

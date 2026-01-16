@@ -1,0 +1,70 @@
+<div class="ti-root">
+  <header class="ti-topbar">
+    <button class="ti-back" (click)="goBack()">←</button>
+    <div class="ti-title">
+      <div class="ti-title-main">Travel Info</div>
+      <div class="ti-title-sub" *ngIf="fullName">{{ fullName }}</div>
+    </div>
+    <div style="width: 40px"></div>
+  </header>
+
+  <div class="ti-container">
+    <div *ngIf="loading" class="ti-status">Loading...</div>
+    <div *ngIf="!loading && err" class="ti-status ti-error">{{ err }}</div>
+
+    <!-- ✅ OUTBOUND TRAINS -->
+    <ng-container *ngIf="!loading && outboundFlights.length > 0">
+      <div style="font-weight: 900; margin: 12px 0 8px; color:#111827;">
+        Outbound Trains (7.01.2026)
+      </div>
+      <section *ngFor="let f of outboundFlights" class="ti-card">
+        <div class="ti-card-head">
+          <div class="ti-card-title">{{ f.title }}</div>
+        </div>
+        <div class="ti-row" style="display:flex; justify-content:space-between; gap:12px;">
+          <div class="ti-left">
+            <div class="ti-airline">{{ f.route }}</div>
+            <div class="ti-airline">{{ f.airline }}</div>
+            <div class="ti-time">Time: {{ f.time }}</div>
+          </div>
+          <div class="ti-right" style="text-align:right;">
+            <div class="ti-pnr-label">PNR</div>
+            <div class="ti-pnr">{{ f.pnr }}</div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- ✅ RETURN TRAINS -->
+    <ng-container *ngIf="!loading && inboundFlights.length > 0">
+      <div style="font-weight: 900; margin: 16px 0 8px; color:#111827;">
+        Return Trains (14.01.2026)
+      </div>
+      <section *ngFor="let f of inboundFlights" class="ti-card">
+        <div class="ti-card-head">
+          <div class="ti-card-title">{{ f.title }}</div>
+        </div>
+        <div class="ti-row" style="display:flex; justify-content:space-between; gap:12px;">
+          <div class="ti-left">
+            <div class="ti-airline">{{ f.route }}</div>
+            <div class="ti-airline">{{ f.airline }}</div>
+            <div class="ti-time">Time: {{ f.time }}</div>
+          </div>
+          <div class="ti-right" style="text-align:right;">
+            <div class="ti-pnr-label">PNR</div>
+            <div class="ti-pnr">{{ f.pnr }}</div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- ✅ No train info yet -->
+    <div
+      *ngIf="!loading && outboundFlights.length === 0 && inboundFlights.length === 0 && !err"
+      class="ti-status"
+      style="margin-top: 14px"
+    >
+      Train details will be updated soon.
+    </div>
+  </div>
+</div>

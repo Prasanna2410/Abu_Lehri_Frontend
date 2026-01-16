@@ -1,0 +1,713 @@
+<!-- src/app/pages/events/events.component.html -->
+<div
+  class="rrpg-root"
+  style="
+    background: linear-gradient(
+      180deg,
+      #ffe2e2 0%,
+      #fff3c4 20%,
+      #ffffff 45%,
+      #dcfce7 75%,
+      #e0e7ff 100%
+    );
+  "
+>
+  <!-- ===== iOS + Android Compatibility Styles (inline like previous) ===== -->
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    /* Root: fix iOS 100vh issues + prevent sideways scroll */
+    .rrpg-root {
+      width: 100%;
+      min-height: 100vh; /* fallback */
+      min-height: 100dvh; /* modern iOS/Android */
+      position: relative;
+      overflow-x: clip; /* better than hidden on iOS */
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Sticky header: add notch safe padding + iOS sticky stability */
+    .rrpg-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+
+      /* ✅ notch-safe */
+      padding-top: calc(0.65rem + var(--safe-top));
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: 0.65rem;
+
+      /* ✅ iOS sticky flicker fix */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    /* Content wrappers: add safe left/right and safe bottom */
+    .rrpg-hero {
+      padding-top: 1.5rem;
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .rrpg-content {
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: calc(2rem + var(--safe-bottom));
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Better taps on iOS */
+    .rrpg-btn {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+    }
+  </style>
+
+  <!-- Topbar -->
+  <header class="rrpg-topbar">
+    <button
+      class="rrpg-btn"
+      (click)="goBack()"
+      style="
+        background: linear-gradient(135deg, #f97316, #facc15);
+        border: none;
+        color: #ffffff;
+        border-radius: 999px;
+        padding: 0.45rem 0.9rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 12px rgba(248, 181, 0, 0.45);
+      "
+    >
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </button>
+
+    <div
+      style="
+        flex: 1;
+        text-align: center;
+        color: #334155;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: -0.01em;
+      "
+    >
+      Yatra Events
+    </div>
+
+    <div style="width: 70px"></div>
+  </header>
+
+  <!-- Hero Section -->
+  <div class="rrpg-hero">
+    <!-- Jain Flag Strip -->
+    <div
+      style="
+        width: 220px;
+        margin: 0 auto 1rem;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+        border: 1px solid #e5e7eb;
+      "
+    >
+      <div style="height: 10px; background: #ff1f1f"></div>
+      <div style="height: 10px; background: #ffd62a"></div>
+      <div
+        style="
+          height: 26px;
+          background: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <span style="font-size: 1.35rem; color: #f97316">卐</span>
+      </div>
+      <div style="height: 10px; background: #16a34a"></div>
+      <div style="height: 10px; background: #1d3273"></div>
+    </div>
+
+    <h1
+      style="
+        font-size: 1.7rem;
+        font-weight: 800;
+        margin: 0 0 0.35rem;
+        background: linear-gradient(
+          135deg,
+          #1e293b 0%,
+          #2563eb 45%,
+          #f97316 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
+      "
+    >
+      Pilgrimage Journey
+    </h1>
+
+    <p
+      style="
+        font-size: 0.9rem;
+        margin: 0;
+        color: #4b5563;
+        font-weight: 500;
+      "
+    >
+      {{ events.length }} days of spiritual path
+    </p>
+  </div>
+
+  <!-- Events List -->
+  <div class="rrpg-content">
+    <!-- Previous Events heading -->
+    <h2
+      style="
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #6b7280;
+        margin: 0 0 0.6rem;
+      "
+    >
+      <!-- Previous Events -->
+    </h2>
+
+    <!-- Previous Events Cards -->
+    <div
+      *ngFor="let e of previousEvents"
+      (click)="onEventClick(e)"
+      [style.background]="e.gradient"
+      style="
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 1.4rem 1.3rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      "
+      onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 40px rgba(15,23,42,0.25)'"
+      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(15,23,42,0.16)'"
+    >
+      <!-- Badge -->
+      <div
+        [style.background]="e.color"
+        style="
+          position: absolute;
+          top: -6px;
+          right: 1rem;
+          color: #ffffff;
+          padding: 0.35rem 0.9rem;
+          border-radius: 0 0 12px 12px;
+          font-weight: 700;
+          font-size: 0.7rem;
+          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+          letter-spacing: 0.6px;
+        "
+      >
+        Previous
+      </div>
+
+      <div
+        style="
+          display: flex;
+          gap: 1.1rem;
+          align-items: flex-start;
+          margin-top: 0.6rem;
+        "
+      >
+        <!-- Icon -->
+        <div
+          [style.background]="e.iconBg"
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+          "
+        >
+          <span style="font-size: 1.7rem">{{ e.icon }}</span>
+        </div>
+
+        <!-- Content -->
+        <div style="flex: 1">
+          <!-- ✅ Title (supports newline via titleHtml) -->
+          <div
+            style="
+              color: #1f2937;
+              font-weight: 700;
+              font-size: 1.02rem;
+              margin-bottom: 0.45rem;
+              line-height: 1.35;
+            "
+            [innerHTML]="e.titleHtml || e.title"
+          ></div>
+
+          <div
+            style="
+              color: #4b5563;
+              font-size: 0.84rem;
+              margin-bottom: 0.65rem;
+              font-weight: 500;
+            "
+          >
+            {{ e.dateHindi }}
+          </div>
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.9rem;
+              flex-wrap: wrap;
+              font-size: 0.8rem;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                color: #374151;
+              "
+            >
+              <i class="fas fa-calendar" [style.color]="e.color"></i>
+              <span style="font-weight: 600">{{ e.date }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Latest Events heading -->
+    <h2
+      style="
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #6b7280;
+        margin: 0.75rem 0 0.6rem;
+      "
+    >
+      Latest Events
+    </h2>
+
+    <!-- Latest Event Cards -->
+    <div
+      *ngFor="let e of events"
+      (click)="onEventClick(e)"
+      [style.background]="e.gradient"
+      style="
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 1.4rem 1.3rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      "
+      onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 40px rgba(15,23,42,0.25)'"
+      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(15,23,42,0.16)'"
+    >
+      <!-- Day Badge -->
+      <div
+        [style.background]="e.color"
+        style="
+          position: absolute;
+          top: -6px;
+          right: 1rem;
+          color: #ffffff;
+          padding: 0.35rem 0.9rem;
+          border-radius: 0 0 12px 12px;
+          font-weight: 700;
+          font-size: 0.75rem;
+          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+          letter-spacing: 0.6px;
+        "
+      >
+        {{ e.dayHindi }}
+      </div>
+
+      <div
+        style="
+          display: flex;
+          gap: 1.1rem;
+          align-items: flex-start;
+          margin-top: 0.6rem;
+        "
+      >
+        <!-- Icon -->
+        <div
+          [style.background]="e.iconBg"
+          style="
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+          "
+        >
+          <span style="font-size: 1.7rem">{{ e.icon }}</span>
+        </div>
+
+        <!-- Content -->
+        <div style="flex: 1">
+          <!-- ✅ Title (supports newline via titleHtml) -->
+          <div
+            style="
+              color: #1f2937;
+              font-weight: 700;
+              font-size: 1.02rem;
+              margin-bottom: 0.45rem;
+              line-height: 1.35;
+            "
+            [innerHTML]="e.titleHtml || e.title"
+          ></div>
+
+          <div
+            style="
+              color: #4b5563;
+              font-size: 0.84rem;
+              margin-bottom: 0.65rem;
+              font-weight: 500;
+            "
+          >
+            {{ e.dateHindi }}
+          </div>
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.9rem;
+              flex-wrap: wrap;
+              font-size: 0.8rem;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                color: #374151;
+              "
+            >
+              <i class="fas fa-calendar" [style.color]="e.color"></i>
+              <span style="font-weight: 600">{{ e.date }}</span>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                color: #374151;
+              "
+            >
+              <i class="fas fa-route" [style.color]="e.color"></i>
+              <span style="font-weight: 600">{{ e.distance }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Card (unchanged) -->
+    <div
+      style="
+        background: linear-gradient(
+          135deg,
+          rgba(248, 181, 0, 0.18),
+          rgba(37, 99, 235, 0.18)
+        );
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 1.5rem 1.3rem;
+        margin-top: 1.5rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+      "
+    >
+      <div style="text-align: center; margin-bottom: 1rem">
+        <div
+          style="
+            color: #4b5563;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 0.45rem;
+          "
+        >
+          Total Journey
+        </div>
+        <div
+          style="
+            color: #1f2937;
+            font-size: 1.9rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+          "
+        >
+          {{ events.length }} Days
+        </div>
+      </div>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.9rem;
+        "
+      >
+        <div
+          style="
+            text-align: center;
+            padding: 0.9rem;
+            background: rgba(255, 255, 255, 0.75);
+            border-radius: 14px;
+          "
+        >
+          <div
+            style="
+              color: #047857;
+              font-size: 1.4rem;
+              font-weight: 900;
+              margin-bottom: 0.2rem;
+            "
+          >
+            {{ getTotalDistance() }}
+          </div>
+          <div style="color: #4b5563; font-size: 0.75rem; font-weight: 600">
+            कि.मी.
+          </div>
+        </div>
+
+        <div
+          style="
+            text-align: center;
+            padding: 0.9rem;
+            background: rgba(255, 255, 255, 0.75);
+            border-radius: 14px;
+          "
+        >
+          <div
+            style="
+              color: #1d4ed8;
+              font-size: 1.4rem;
+              font-weight: 900;
+              margin-bottom: 0.2rem;
+            "
+          >
+            {{ getTotalTirth() }}
+          </div>
+          <div style="color: #4b5563; font-size: 0.75rem; font-weight: 600">
+            तीर्थ
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Schedule Popup (iOS safe bottom padding added) -->
+  <div
+    *ngIf="activeScheduleItems && activeScheduleItems.length > 0 && activeEvent"
+    style="
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+
+      /* ✅ safe padding for notches + home bar */
+      padding-top: calc(1.5rem + env(safe-area-inset-top, 0px));
+      padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+      padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+      padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    "
+  >
+    <div
+      style="
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.4);
+        overflow: hidden;
+      "
+    >
+      <div
+        style="
+          background: linear-gradient(135deg, #ff1f1f, #ffd62a);
+          padding: 1rem 1.1rem 0.7rem;
+          color: #ffffff;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.35rem;
+          "
+        >
+          <div
+            style="
+              font-size: 0.8rem;
+              font-weight: 600;
+              letter-spacing: 0.08em;
+            "
+          >
+            {{ activeEvent?.date }}
+          </div>
+          <button
+            class="rrpg-btn"
+            (click)="closeSchedule()"
+            style="
+              border: none;
+              background: rgba(255, 255, 255, 0.18);
+              color: #ffffff;
+              border-radius: 999px;
+              width: 28px;
+              height: 28px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.1rem;
+              cursor: pointer;
+            "
+          >
+            ×
+          </button>
+        </div>
+
+        <!-- ✅ Popup title (supports newline via titleHtml) -->
+        <div
+          style="font-size: 1.05rem; font-weight: 700; line-height: 1.3"
+          [innerHTML]="activeEvent?.titleHtml || activeEvent?.title"
+        ></div>
+
+        <div style="margin-top: 0.25rem; font-size: 0.8rem; opacity: 0.9">
+          {{ getPopupSubtitle() }}
+        </div>
+      </div>
+
+      <div style="padding: 1rem 1.1rem 1.1rem; background: #f9fafb">
+        <div
+          style="
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.6rem;
+          "
+        >
+          दिनचर्या
+        </div>
+
+        <div
+          *ngFor="let item of activeScheduleItems; let i = index"
+          style="
+            display: grid;
+            grid-template-columns: auto 1fr;
+            column-gap: 0.7rem;
+            align-items: flex-start;
+            margin-bottom: 0.65rem;
+          "
+        >
+          <div
+            style="
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: #1d4ed8;
+              min-width: 70px;
+            "
+          >
+            {{ item.time }}
+            <span style="font-size: 0.7rem; font-weight: 600">{{
+              item.meridiem
+            }}</span>
+          </div>
+
+          <div style="display: flex; align-items: flex-start; gap: 0.45rem">
+            <div
+              style="
+                margin-top: 3px;
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: #ff1f1f;
+              "
+            ></div>
+            <div style="font-size: 0.82rem; color: #4b5563; font-weight: 500">
+              {{ item.title }}
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 0.3rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: right;
+          "
+        >
+          * कार्यक्रम में आवश्यकतानुसार परिवर्तन संभव है
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

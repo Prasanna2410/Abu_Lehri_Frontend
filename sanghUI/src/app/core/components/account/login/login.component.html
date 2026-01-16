@@ -1,0 +1,410 @@
+<!-- src/app/pages/login/login.component.html -->
+<section
+  style="
+    min-height: 100vh;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      sans-serif;
+  "
+>
+  <div
+    style="
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 2.25rem 2rem 2rem;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+    "
+  >
+    <!-- Logo + Title -->
+    <div
+      style="
+        text-align: center;
+        margin-bottom: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+      "
+    >
+      <!-- Logo -->
+      <div
+        style="
+          width: 160px;
+          height: 160px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <img
+          src="/assets/images/Mutha Jirawala Sangh.png"
+          alt="Organization Logo"
+          style="width: 100%; height: 100%; object-fit: contain"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        />
+        <div
+          style="
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            color: #111827;
+            background: #f3f4f6;
+            border-radius: 999px;
+          "
+        >
+          RR
+        </div>
+      </div>
+
+      <!-- App title (multi-colour, like shared image) -->
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+          align-items: center;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            column-gap: 0.3rem;
+            row-gap: 0.05rem;
+            align-items: baseline;
+            justify-content: center;
+            max-width: 260px;
+          "
+        >
+          <span
+            style="
+              color: #1d3273;
+              font-weight: 800;
+              font-size: 0.9rem;
+              letter-spacing: 0.05em;
+              text-transform: uppercase;
+            "
+          >
+            Abu
+          </span>
+          <span
+            style="
+              color: #dc2626;
+              font-weight: 800;
+              font-size: 0.9rem;
+              letter-spacing: 0.05em;
+              text-transform: uppercase;
+            "
+          >
+            Lehri
+          </span>
+          <span
+            style="
+              color: #f59e0b;
+              font-weight: 800;
+              font-size: 0.9rem;
+              letter-spacing: 0.05em;
+              text-transform: uppercase;
+            "
+          >
+            Ratna
+          </span>
+        </div>
+
+        <div>
+          <span
+            style="
+              color: #15803d;
+              font-weight: 800;
+              font-size: 0.9rem;
+              letter-spacing: 0.05em;
+              text-transform: uppercase;
+            "
+          >
+            Sangh Utsav
+          </span>
+        </div>
+
+        <span
+          style="
+            font-size: 0.72rem;
+            color: #4b5563;
+            font-weight: 500;
+          "
+        >
+          Yatra Companion
+        </span>
+
+        <!-- Jain flag underline -->
+        <div
+          style="
+            display: flex;
+            width: 120px;
+            height: 4px;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 0.1rem;
+          "
+        >
+          <div style="flex: 1; background: #ff1f1f;"></div>
+          <div style="flex: 1; background: #ffd62a;"></div>
+          <div style="flex: 1; background: #42c742;"></div>
+          <div style="flex: 1; background: #16a34a;"></div>
+          <div style="flex: 1; background: #1d3273;"></div>
+        </div>
+      </div>
+
+      <p
+        style="
+          color: #6b7280;
+          font-size: 0.9rem;
+          margin: 0.4rem 0 0;
+          font-weight: 500;
+        "
+      >
+        Welcome back, Yatrik
+      </p>
+    </div>
+
+    <!-- Login Card (form) -->
+    <div>
+      <form [formGroup]="frmValidate" (ngSubmit)="onLoginUser()">
+        <!-- Error Banner -->
+        <p
+          *ngIf="invalidMsg"
+          style="
+            color: #b91c1c;
+            font-size: 0.85rem;
+            margin: 0 0 1.25rem;
+            font-weight: 500;
+            text-align: center;
+            background: #fef2f2;
+            padding: 0.75rem;
+            border-radius: 12px;
+            border: 1px solid #fecaca;
+          "
+        >
+          {{ invalidMsg }}
+        </p>
+
+        <!-- Username Field -->
+        <div style="margin-bottom: 1.25rem">
+          <label
+            for="username"
+            style="
+              display: block;
+              margin-bottom: 0.35rem;
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: #374151;
+            "
+            >Mobile Number</label
+          >
+          <div style="position: relative">
+            <div
+              style="
+                position: absolute;
+                left: 0.9rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #9ca3af;
+                font-size: 1rem;
+                z-index: 1;
+                pointer-events: none;
+              "
+            >
+              👤
+            </div>
+            <input
+              id="username"
+              type="text"
+              placeholder="Enter your mobile number"
+              formControlName="username"
+              [ngClass]="{ 'error': submitted && f['username'].errors }"
+              style="
+                width: 100%;
+                padding: 0.85rem 0.9rem 0.85rem 2.7rem;
+                border-radius: 12px;
+                border: 1px solid #d1d5db;
+                font-size: 0.95rem;
+                transition: all 0.2s ease;
+                background: #f9fafb;
+                color: #111827;
+                font-weight: 500;
+              "
+              [style.border-color]="
+                submitted && f['username'].errors ? '#f97373' : '#d1d5db'
+              "
+              [style.background]="
+                submitted && f['username'].errors ? '#fef2f2' : '#f9fafb'
+              "
+            />
+          </div>
+          <div
+            *ngIf="submitted && f['username'].errors"
+            style="
+              color: #b91c1c;
+              font-size: 0.8rem;
+              margin-top: 0.35rem;
+              margin-left: 0.1rem;
+              font-weight: 500;
+            "
+          >
+            Please enter mobile number
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div style="margin-bottom: 1.5rem">
+          <label
+            for="password"
+            style="
+              display: block;
+              margin-bottom: 0.35rem;
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: #374151;
+            "
+            >Password</label
+          >
+          <div style="position: relative">
+            <div
+              style="
+                position: absolute;
+                left: 0.9rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #9ca3af;
+                font-size: 1rem;
+                z-index: 1;
+                pointer-events: none;
+              "
+            >
+              🔒
+            </div>
+            <input
+              id="password"
+              type="password"
+              placeholder="Password (mobile number by default)"
+              formControlName="password"
+              [ngClass]="{ 'error': submitted && f['password'].errors }"
+              style="
+                width: 100%;
+                padding: 0.85rem 0.9rem 0.85rem 2.7rem;
+                border-radius: 12px;
+                border: 1px solid #d1d5db;
+                font-size: 0.95rem;
+                transition: all 0.2s ease;
+                background: #f9fafb;
+                color: #111827;
+                font-weight: 500;
+              "
+              [style.border-color]="
+                submitted && f['password'].errors ? '#f97373' : '#d1d5db'
+              "
+              [style.background]="
+                submitted && f['password'].errors ? '#fef2f2' : '#f9fafb'
+              "
+            />
+          </div>
+          <div
+            *ngIf="submitted && f['password'].errors"
+            style="
+              color: #b91c1c;
+              font-size: 0.8rem;
+              margin-top: 0.35rem;
+              margin-left: 0.1rem;
+              font-weight: 500;
+            "
+          >
+            Please enter password
+          </div>
+        </div>
+
+        <!-- Login Button -->
+        <button
+          type="submit"
+          style="
+            width: 100%;
+           background: linear-gradient(
+  135deg,
+  #d946ef,   /* muted pink-purple */
+  #071976,   /* soft purple */
+  #4771cc,   /* calm blue */
+  #b3d10b,   /* teal green */
+  #c96a12,   /* warm yellow */
+  #d80b0b    /* muted orange-red */
+);
+
+            color: #ffffff;
+            border: none;
+            padding: 0.9rem 1.4rem;
+            font-size: 0.98rem;
+            font-weight: 600;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+          "
+        >
+          <span>Login</span>
+          <span style="font-size: 1.1rem">→</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer Text -->
+    <div style="text-align: center; margin-top: 1.5rem">
+      <p
+        style="
+          color: #9ca3af;
+          font-size: 0.8rem;
+          margin: 0;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        "
+      >
+        🙏 May your journey be filled with peace and enlightenment.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+input:focus {
+  outline: none !important;
+  border-color: #4f46e5 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+/* Button hover */
+button[type='submit']:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.55) !important;
+}
+
+button[type='submit']:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.45) !important;
+}
+</style>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register User</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Banner Section -->
+  <div class="banner" style="width: 100%; text-align: center; position: relative; z-index: 4;">
+    <img src="/assets/images/भावभरा आमंत्रण_20251029_161427_0000.png" alt="Vibrant Sangh Banner" style="width: 100%; height: auto; max-height: 150px; object-fit: cover; display: block; border-bottom: 3px solid #c71585; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+  </div>
+
+  <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center"
+       style="background-image: url('assets/images/sangh_banner.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; position: relative; overflow: hidden; font-family: 'Noto Serif Devanagari', serif; padding: 40px;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(34, 139, 34, 0.7) 50%, rgba(52, 73, 94, 0.6) 100%); z-index: 1; opacity: 0.85;"></div>
+   
+    <a href="/login" class="btn btn-login shadow-lg" style="position: absolute; top: 20px; right: 20px; background-color: #c71585; border-color: #c71585; color: white; border-radius: 25px; padding: 10px 20px; font-family: 'Poppins', sans-serif; font-weight: 600; z-index: 3; transition: all 0.3s ease;">
+      Login
+    </a>
+    <div class="card shadow-lg w-100" style="max-width: 900px; border-radius: 20px; overflow: hidden; background: #ffffff; position: relative; z-index: 2;">
+      <div class="card-header text-center py-4" style="background: linear-gradient(90deg, #c71585, #db7093); color: white;">
+        <h1 class="mb-0" style="font-family: 'Noto Serif Devanagari', serif; font-weight: 700;">Sangh Registration</h1>
+        <p class="mt-2 mb-0" style="font-style: italic; opacity: 0.9; font-family: 'Poppins', sans-serif;">Join Us in Embracing Tradition & Unity</p>
+      </div>
+      <div class="card-body p-4">
+        <form [formGroup]="frmValidate" id="frmRegistration" (ngSubmit)="onRegisterUser()" novalidate>
+          <div class="progress mb-4" style="height: 8px;">
+            <div class="progress-bar" role="progressbar" [style.width]="(currentSection / 3 * 100) + '%'" style="background-color: #c71585; transition: width 0.3s ease;"></div>
+          </div>
+          <!-- Primary User Section -->
+          <fieldset [hidden]="currentSection !== 1" class="animate__animated animate__fadeIn">
+            <h4 class="text-center mb-4" style="color: #c71585; font-family: 'Noto Serif Devanagari', serif;">Primary User Details</h4>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="firstName" placeholder="प्रथम नाम दर्ज करें" maxlength="30" formControlName="firstName"
+                         [ngClass]="{ 'is-invalid': submitted && f['firstName'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('firstName')" attr.data-field="firstName" aria-required="true">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'firstName', 'btn-warning': isListening && currentField === 'firstName'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="firstName-mic" aria-label="Toggle voice input for first name">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'firstName', 'fa-pause': isListening && currentField === 'firstName'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['firstName'].errors" class="invalid-feedback">
+                  <div *ngIf="f['firstName'].errors['required']">First name is required</div>
+                  <div *ngIf="f['firstName'].errors['minlength']">Minimum 3 characters required</div>
+                  <div *ngIf="f['firstName'].errors['pattern']">Please enter a valid name</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="middleName" class="form-label">Middle Name <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="middleName" formControlName="middleName" placeholder="मध्य नाम दर्ज करें" maxlength="30"
+                         [ngClass]="{ 'is-invalid': submitted && f['middleName'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('middleName')" attr.data-field="middleName" aria-required="true">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'middleName', 'btn-warning': isListening && currentField === 'middleName'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="middleName-mic" aria-label="Toggle voice input for middle name">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'middleName', 'fa-pause': isListening && currentField === 'middleName'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['middleName'].errors" class="invalid-feedback">
+                  <div *ngIf="f['middleName'].errors['required']">Middle name is required</div>
+                  <div *ngIf="f['middleName'].errors['minlength']">Minimum 3 characters required</div>
+                  <div *ngIf="f['middleName'].errors['pattern']">Please enter a valid name</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="lastName" formControlName="lastName" placeholder="अंतिम नाम दर्ज करें" maxlength="30"
+                         [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('lastName')" attr.data-field="lastName" aria-required="true">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'lastName', 'btn-warning': isListening && currentField === 'lastName'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="lastName-mic" aria-label="Toggle voice input for last name">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'lastName', 'fa-pause': isListening && currentField === 'lastName'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['lastName'].errors" class="invalid-feedback">
+                  <div *ngIf="f['lastName'].errors['required']">Last name is required</div>
+                  <div *ngIf="f['lastName'].errors['minlength']">Minimum 3 characters required</div>
+                  <div *ngIf="f['lastName'].errors['pattern']">Please enter a valid name</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="gender" [ngClass]="{ 'is-invalid': submitted && f['gender'].errors }" style="border-radius: 10px;"
+                        (focus)="setCurrentField('gender')" attr.data-field="gender" aria-required="true">
+                  <option value="" selected>लिंग चुनें</option>
+                  <option value="Male">पुरुष</option>
+                  <option value="Female">महिला</option>
+                  <option value="Other">अन्य</option>
+                </select>
+                <div *ngIf="submitted && f['gender'].errors" class="invalid-feedback">
+                  <div *ngIf="f['gender'].errors['required']">Gender is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" formControlName="dateOfBirth" [ngClass]="{ 'is-invalid': submitted && f['dateOfBirth'].errors }" style="border-radius: 10px;" attr.data-field="dateOfBirth" aria-required="true">
+                <div *ngIf="submitted && f['dateOfBirth'].errors" class="invalid-feedback">
+                  <div *ngIf="f['dateOfBirth'].errors['required']">Date of Birth is required</div>
+                  <div *ngIf="f['dateOfBirth'].errors['futureDate']">Date of Birth cannot be in the future</div>
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="address" formControlName="address" placeholder="पता दर्ज करें" maxlength="100"
+                       [ngClass]="{ 'is-invalid': submitted && f['address'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('address')" attr.data-field="address" aria-required="true">
+                <div *ngIf="submitted && f['address'].errors" class="invalid-feedback">
+                  <div *ngIf="f['address'].errors['required']">Address is required</div>
+                  <div *ngIf="f['address'].errors['minlength']">Minimum 3 characters required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="city" formControlName="city" placeholder="शहर दर्ज करें" maxlength="100"
+                       [ngClass]="{ 'is-invalid': submitted && f['city'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('city')" attr.data-field="city" aria-required="true">
+                <div *ngIf="submitted && f['city'].errors" class="invalid-feedback">
+                  <div *ngIf="f['city'].errors['required']">City is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="pinCode" class="form-label">Pin Code <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="pinCode" formControlName="pinCode" placeholder="पिन कोड दर्ज करें" maxlength="6"
+                         [ngClass]="{ 'is-invalid': submitted && f['pinCode'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('pinCode')" attr.data-field="pinCode" aria-required="true">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'pinCode', 'btn-warning': isListening && currentField === 'pinCode'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="pinCode-mic" aria-label="Toggle voice input for pin code">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'pinCode', 'fa-pause': isListening && currentField === 'pinCode'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['pinCode'].errors" class="invalid-feedback">
+                  <div *ngIf="f['pinCode'].errors['required']">Pin Code is required</div>
+                  <div *ngIf="f['pinCode'].errors['pattern'] || f['pinCode'].errors['minlength']">Please enter a valid 6-digit Pin Code</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="mobileNumber" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="tel" class="form-control" id="mobileNumber" formControlName="mobileNumber" placeholder="मोबाइल नंबर दर्ज करें" maxlength="10"
+                         [ngClass]="{ 'is-invalid': submitted && f['mobileNumber'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('mobileNumber')" attr.data-field="mobileNumber" aria-required="true">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'mobileNumber', 'btn-warning': isListening && currentField === 'mobileNumber'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="mobileNumber-mic" aria-label="Toggle voice input for mobile number">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'mobileNumber', 'fa-pause': isListening && currentField === 'mobileNumber'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['mobileNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="f['mobileNumber'].errors['required']">Mobile Number is required</div>
+                  <div *ngIf="f['mobileNumber'].errors['pattern'] || f['mobileNumber'].errors['minlength']">Please enter a valid 10-digit Mobile Number</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="whatsappNumber" class="form-label">WhatsApp Number</label>
+                <div class="input-group">
+                  <input type="tel" class="form-control" id="whatsappNumber" formControlName="whatsappNumber" placeholder="व्हाट्सएप नंबर दर्ज करें" maxlength="10"
+                         [ngClass]="{ 'is-invalid': submitted && f['whatsappNumber'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('whatsappNumber')" attr.data-field="whatsappNumber">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'whatsappNumber', 'btn-warning': isListening && currentField === 'whatsappNumber'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="whatsappNumber-mic" aria-label="Toggle voice input for WhatsApp number">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'whatsappNumber', 'fa-pause': isListening && currentField === 'whatsappNumber'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['whatsappNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="f['whatsappNumber'].errors['pattern']">Please enter a valid 10-digit WhatsApp Number</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="emergencyNumber" class="form-label">Emergency Number</label>
+                <div class="input-group">
+                  <input type="tel" class="form-control" id="emergencyNumber" formControlName="emergencyNumber" placeholder="आपातकालीन नंबर दर्ज करें" maxlength="10"
+                         [ngClass]="{ 'is-invalid': submitted && f['emergencyNumber'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('emergencyNumber')" attr.data-field="emergencyNumber">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'emergencyNumber', 'btn-warning': isListening && currentField === 'emergencyNumber'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="emergencyNumber-mic" aria-label="Toggle voice input for emergency number">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'emergencyNumber', 'fa-pause': isListening && currentField === 'emergencyNumber'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['emergencyNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="f['emergencyNumber'].errors['pattern']">Please enter a valid 10-digit Emergency Number</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="email" class="form-control" id="email" formControlName="email" placeholder="ईमेल दर्ज करें" maxlength="50"
+                         [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('email')" attr.data-field="email" aria-required="true">
+                  <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'email', 'btn-warning': isListening && currentField === 'email'}"
+                          (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="email-mic" aria-label="Toggle voice input for email">
+                    <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'email', 'fa-pause': isListening && currentField === 'email'}"></i>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                  <div *ngIf="f['email'].errors['required']">Email is required</div>
+                  <div *ngIf="f['email'].errors['email']">Please enter a valid email</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                <input type="password" class="form-control" id="password" formControlName="password" placeholder="पासवर्ड दर्ज करें" maxlength="15"
+                       [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('password')" attr.data-field="password" aria-required="true">
+                <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+                  <div *ngIf="f['password'].errors['required']">Password is required</div>
+                  <div *ngIf="f['password'].errors['minlength']">Minimum 4 characters required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="confirmPwd" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                <input type="password" class="form-control" id="confirmPwd" formControlName="confirmPwd" placeholder="पासवर्ड की पुष्टि करें" maxlength="15"
+                       [ngClass]="{ 'is-invalid': (submitted && f['confirmPwd'].errors) || frmValidate.errors?.['mismatch'] }" style="border-radius: 10px;"
+                       (focus)="setCurrentField('confirmPwd')" attr.data-field="confirmPwd" aria-required="true">
+                <div *ngIf="submitted && f['confirmPwd'].errors" class="invalid-feedback">
+                  <div *ngIf="f['confirmPwd'].errors['required']">Confirm Password is required</div>
+                  <div *ngIf="f['confirmPwd'].errors['minlength']">Minimum 4 characters required</div>
+                </div>
+                <div *ngIf="submitted && frmValidate.errors?.['mismatch']" class="invalid-feedback">
+                  Passwords do not match
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="idProofType" class="form-label">ID Proof Type <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="idProofType" [ngClass]="{ 'is-invalid': submitted && f['idProofType'].errors }" style="border-radius: 10px;"
+                        (focus)="setCurrentField('idProofType')" attr.data-field="idProofType" aria-required="true">
+                  <option value="" selected>आईडी प्रकार चुनें</option>
+                  <option value="Aadhaar">आधार</option>
+                  <option value="Passport">पासपोर्ट</option>
+                  <option value="Voter ID">वोटर आईडी</option>
+                  <option value="Driving License">ड्राइविंग लाइसेंस</option>
+                </select>
+                <div *ngIf="submitted && f['idProofType'].errors" class="invalid-feedback">
+                  <div *ngIf="f['idProofType'].errors['required']">ID Proof Type is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="idProofNumber" class="form-label">ID Proof Number <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="idProofNumber" formControlName="idProofNumber" placeholder="आईडी नंबर दर्ज करें" maxlength="50"
+                       [ngClass]="{ 'is-invalid': submitted && f['idProofNumber'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('idProofNumber')" attr.data-field="idProofNumber" aria-required="true">
+                <div *ngIf="submitted && f['idProofNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="f['idProofNumber'].errors['required']">ID Proof Number is required</div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label for="idProofPath" class="form-label">Upload ID Proof <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="file" class="form-control" id="idProofPath" (change)="onFileChange($event, 'idProofPath')"
+                         accept=".pdf,.jpg,.jpeg,.png" required [ngClass]="{ 'is-invalid': (submitted || f['idProofPath'].touched) && f['idProofPath'].errors }"
+                         style="border-radius: 10px 0 0 10px;" attr.data-field="idProofPath" aria-required="true" aria-describedby="idProofPathHelp">
+                  <button *ngIf="getSelectedFileName('idProofPath')" class="btn btn-outline-danger" type="button" (click)="clearFile('idProofPath')"
+                          style="border-radius: 0 10px 10px 0;" aria-label="Clear selected ID proof file">Clear</button>
+                </div>
+                <small id="idProofPathHelp" class="form-text text-muted">Upload a PDF, JPG, or PNG file (max 5MB)</small>
+                <div *ngIf="getSelectedFileName('idProofPath')" class="form-text text-success mt-1">Selected: {{ getSelectedFileName('idProofPath') }}</div>
+                <div *ngIf="(submitted || f['idProofPath'].touched) && f['idProofPath'].errors" class="invalid-feedback">
+                  <div *ngIf="f['idProofPath'].errors['required']">ID Proof file is required</div>
+                  <div *ngIf="f['idProofPath'].errors['invalidFileType']">Only PDF, JPG, or PNG files are allowed</div>
+                  <div *ngIf="f['idProofPath'].errors['fileTooLarge']">File size exceeds 5MB limit</div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-4">
+              <button type="button" class="btn btn-primary px-5 py-2" (click)="nextSection()" style="background-color: #c71585; border-color: #c71585; border-radius: 25px; font-weight: 600;"
+                      [disabled]="isPrimarySectionInvalid()" aria-label="Next section">Next</button>
+            </div>
+          </fieldset>
+          <!-- Family Members Section -->
+          <fieldset [hidden]="currentSection !== 2" class="animate__animated animate__fadeIn">
+            <h4 class="text-center mb-4" style="color: #c71585; font-family: 'Noto Serif Devanagari', serif;">Family Members</h4>
+            <div *ngFor="let i of familyMembers; let index=index" class="card mb-3 shadow-sm" style="border-radius: 15px; border: 1px solid #e0e0e0;">
+              <div class="card-body">
+                <h5 class="card-title" style="font-family: 'Noto Serif Devanagari', serif;">Family Member {{index + 1}}</h5>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label for="familyFirstName_{{index}}" class="form-label">First Name <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="familyFirstName_{{index}}" [formControlName]="'familyFirstName_' + index" placeholder="प्रथम नाम दर्ज करें" maxlength="30"
+                             [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['firstName']?.errors }" style="border-radius: 10px;"
+                             (focus)="setCurrentField('familyFirstName_' + index)" attr.data-field="familyFirstName_{{index}}" aria-required="true">
+                      <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'familyFirstName_' + index, 'btn-warning': isListening && currentField === 'familyFirstName_' + index}"
+                              (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="familyFirstName_{{index}}-mic" aria-label="Toggle voice input for family first name">
+                        <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'familyFirstName_' + index, 'fa-pause': isListening && currentField === 'familyFirstName_' + index}"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="submitted && fFamily[index]?.['firstName']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['firstName']?.errors?.['required']">First name is required</div>
+                      <div *ngIf="fFamily[index]?.['firstName']?.errors?.['minlength']">Minimum 3 characters required</div>
+                      <div *ngIf="fFamily[index]?.['firstName']?.errors?.['pattern']">Please enter a valid name</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="familyMiddleName_{{index}}" class="form-label">Middle Name <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="familyMiddleName_{{index}}" [formControlName]="'familyMiddleName_' + index" placeholder="मध्य नाम दर्ज करें" maxlength="30"
+                             [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['middleName']?.errors }" style="border-radius: 10px;"
+                             (focus)="setCurrentField('familyMiddleName_' + index)" attr.data-field="familyMiddleName_{{index}}" aria-required="true">
+                      <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'familyMiddleName_' + index, 'btn-warning': isListening && currentField === 'familyMiddleName_' + index}"
+                              (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="familyMiddleName_{{index}}-mic" aria-label="Toggle voice input for family middle name">
+                        <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'familyMiddleName_' + index, 'fa-pause': isListening && currentField === 'familyMiddleName_' + index}"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="submitted && fFamily[index]?.['middleName']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['middleName']?.errors?.['required']">Middle name is required</div>
+                      <div *ngIf="fFamily[index]?.['middleName']?.errors?.['minlength']">Minimum 3 characters required</div>
+                      <div *ngIf="fFamily[index]?.['middleName']?.errors?.['pattern']">Please enter a valid name</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="familyLastName_{{index}}" class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="familyLastName_{{index}}" [formControlName]="'familyLastName_' + index" placeholder="अंतिम नाम दर्ज करें" maxlength="30"
+                             [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['lastName']?.errors }" style="border-radius: 10px;"
+                             (focus)="setCurrentField('familyLastName_' + index)" attr.data-field="familyLastName_{{index}}" aria-required="true">
+                      <button class="btn" [ngClass]="{'btn-magenta': !isListening || currentField !== 'familyLastName_' + index, 'btn-warning': isListening && currentField === 'familyLastName_' + index}"
+                              (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)" attr.data-field="familyLastName_{{index}}-mic" aria-label="Toggle voice input for family last name">
+                        <i class="fas" [ngClass]="{'fa-microphone': !isListening || currentField !== 'familyLastName_' + index, 'fa-pause': isListening && currentField === 'familyLastName_' + index}"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="submitted && fFamily[index]?.['lastName']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['lastName']?.errors?.['required']">Last name is required</div>
+                      <div *ngIf="fFamily[index]?.['lastName']?.errors?.['minlength']">Minimum 3 characters required</div>
+                      <div *ngIf="fFamily[index]?.['lastName']?.errors?.['pattern']">Please enter a valid name</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="familyGender_{{index}}" class="form-label">Gender <span class="text-danger">*</span></label>
+                    <select class="form-select" [formControlName]="'familyGender_' + index" [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['gender']?.errors }" style="border-radius: 10px;"
+                            (focus)="setCurrentField('familyGender_' + index)" attr.data-field="familyGender_{{index}}" aria-required="true">
+                      <option value="" selected>लिंग चुनें</option>
+                      <option value="Male">पुरुष</option>
+                      <option value="Female">महिला</option>
+                      <option value="Other">अन्य</option>
+                    </select>
+                    <div *ngIf="submitted && fFamily[index]?.['gender']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['gender']?.errors?.['required']">Gender is required</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="familyDob_{{index}}" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" [formControlName]="'familyDateOfBirth_' + index" [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['dateOfBirth']?.errors }"
+                           style="border-radius: 10px;" attr.data-field="familyDateOfBirth_{{index}}" aria-required="true">
+                    <div *ngIf="submitted && fFamily[index]?.['dateOfBirth']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['dateOfBirth']?.errors?.['required']">Date of Birth is required</div>
+                      <div *ngIf="fFamily[index]?.['dateOfBirth']?.errors?.['futureDate']">Date of Birth cannot be in the future</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="familyIdProofType_{{index}}" class="form-label">ID Proof Type <span class="text-danger">*</span></label>
+                    <select class="form-select" [formControlName]="'familyIdProofType_' + index" [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['idProofType']?.errors }" style="border-radius: 10px;"
+                            (focus)="setCurrentField('familyIdProofType_' + index)" attr.data-field="familyIdProofType_{{index}}" aria-required="true">
+                      <option value="" selected>आईडी प्रकार चुनें</option>
+                      <option value="Aadhaar">आधार</option>
+                      <option value="Passport">पासपोर्ट</option>
+                      <option value="Voter ID">वोटर आईडी</option>
+                      <option value="Driving License">ड्राइविंग लाइसेंस</option>
+                    </select>
+                    <div *ngIf="submitted && fFamily[index]?.['idProofType']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['idProofType']?.errors?.['required']">ID Proof Type is required</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="familyIdProofNumber_{{index}}" class="form-label">ID Proof Number <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" [formControlName]="'familyIdProofNumber_' + index" placeholder="आईडी नंबर दर्ज करें" maxlength="50"
+                           [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['idProofNumber']?.errors }" style="border-radius: 10px;"
+                           (focus)="setCurrentField('familyIdProofNumber_' + index)" attr.data-field="familyIdProofNumber_{{index}}" aria-required="true">
+                    <div *ngIf="submitted && fFamily[index]?.['idProofNumber']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['idProofNumber']?.errors?.['required']">ID Proof Number is required</div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <label for="familyIdProofPath_{{index}}" class="form-label">Upload ID Proof <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <input type="file" class="form-control" [id]="'familyIdProofPath_' + index" (change)="onFileChange($event, 'familyIdProofPath_' + index)"
+                             accept=".pdf,.jpg,.jpeg,.png" required [ngClass]="{ 'is-invalid': (submitted || fFamily[index]?.['idProofPath']?.touched) && fFamily[index]?.['idProofPath']?.errors }"
+                             style="border-radius: 10px 0 0 10px;" attr.data-field="familyIdProofPath_{{index}}" aria-required="true" [attr.aria-describedby]="'familyIdProofPath_' + index + 'Help'">
+                      <button *ngIf="getSelectedFileName('familyIdProofPath_' + index)" class="btn btn-outline-danger" type="button" (click)="clearFile('familyIdProofPath_' + index)"
+                              style="border-radius: 0 10px 10px 0;" aria-label="Clear selected family ID proof file">Clear</button>
+                    </div>
+                    <small [id]="'familyIdProofPath_' + index + 'Help'" class="form-text text-muted">Upload a PDF, JPG, or PNG file (max 5MB)</small>
+                    <div *ngIf="getSelectedFileName('familyIdProofPath_' + index)" class="form-text text-success mt-1">Selected: {{ getSelectedFileName('familyIdProofPath_' + index) }}</div>
+                    <div *ngIf="(submitted || fFamily[index]?.['idProofPath']?.touched) && fFamily[index]?.['idProofPath']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['idProofPath']?.errors?.['required']">ID Proof file is required</div>
+                      <div *ngIf="fFamily[index]?.['idProofPath']?.errors?.['invalidFileType']">Only PDF, JPG, or PNG files are allowed</div>
+                      <div *ngIf="fFamily[index]?.['idProofPath']?.errors?.['fileTooLarge']">File size exceeds 5MB limit</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="familyMemberRelation_{{index}}" class="form-label">Relation to Primary User <span class="text-danger">*</span></label>
+                    <select class="form-select" [formControlName]="'familyMemberRelation_' + index" [ngClass]="{ 'is-invalid': submitted && fFamily[index]?.['memberRelation']?.errors }" style="border-radius: 10px;"
+                            (focus)="setCurrentField('familyMemberRelation_' + index)" attr.data-field="familyMemberRelation_{{index}}" aria-required="true">
+                      <option value="" selected>संबंध चुनें</option>
+                      <option value="Spouse">पति/पत्नी</option>
+                      <option value="Child">बच्चा</option>
+                      <option value="Parent">माता-पिता</option>
+                      <option value="Sibling">भाई-बहन</option>
+                      <option value="Other">अन्य</option>
+                    </select>
+                    <div *ngIf="submitted && fFamily[index]?.['memberRelation']?.errors" class="invalid-feedback">
+                      <div *ngIf="fFamily[index]?.['memberRelation']?.errors?.['required']">Relation is required</div>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm mt-3" (click)="removeFamilyMember(index)" style="border-radius: 25px;" aria-label="Remove family member">Remove Member</button>
+              </div>
+            </div>
+            <div class="text-center mb-3">
+              <button type="button" class="btn btn-magenta px-4 py-2" (click)="addFamilyMember()" style="border-radius: 25px;" aria-label="Add family member">Add Family Member</button>
+            </div>
+            <div class="text-center">
+              <button type="button" class="btn btn-outline-secondary px-4 py-2 me-2" (click)="previousSection()" style="border-radius: 25px;" aria-label="Previous section">Previous</button>
+              <button type="button" class="btn btn-primary px-4 py-2" (click)="nextSection()" style="background-color: #c71585; border-color: #c71585; border-radius: 25px;"
+                      [disabled]="isFamilySectionInvalid()" aria-label="Next section">Next</button>
+            </div>
+          </fieldset>
+          <!-- Additional Fields -->
+          <fieldset [hidden]="currentSection !== 3" class="animate__animated animate__fadeIn">
+            <h4 class="text-center mb-4" style="color: #c71585; font-family: 'Noto Serif Devanagari', serif;">Additional Information</h4>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="daysAttending" class="form-label">Days Attending <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="daysAttending" [ngClass]="{ 'is-invalid': submitted && f['daysAttending'].errors }" style="border-radius: 10px;"
+                        (focus)="setCurrentField('daysAttending')" attr.data-field="daysAttending" aria-required="true">
+                  <option value="" selected>दिन चुनें</option>
+                  <option value="Fri">शुक्रवार</option>
+                  <option value="Sat">शनिवार</option>
+                  <option value="Sun">रविवार</option>
+                  <option value="All">सभी दिन</option>
+                </select>
+                <div *ngIf="submitted && f['daysAttending'].errors" class="invalid-feedback">
+                  <div *ngIf="f['daysAttending'].errors['required']">Days Attending is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="accommodationRequired" class="form-label">Accommodation Required <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="accommodationRequired" [ngClass]="{ 'is-invalid': submitted && f['accommodationRequired'].errors }" style="border-radius: 10px;"
+                        (focus)="setCurrentField('accommodationRequired')" attr.data-field="accommodationRequired" aria-required="true">
+                  <option value="" selected>विकल्प चुनें</option>
+                  <option value="Yes">हाँ</option>
+                  <option value="No">नहीं</option>
+                </select>
+                <div *ngIf="submitted && f['accommodationRequired'].errors" class="invalid-feedback">
+                  <div *ngIf="f['accommodationRequired'].errors['required']">Accommodation Required is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="mealsRequired" class="form-label">Meals Required <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="mealsRequired" [ngClass]="{ 'is-invalid': submitted && f['mealsRequired'].errors }" style="border-radius: 10px;"
+                        (focus)="setCurrentField('mealsRequired')" attr.data-field="mealsRequired" aria-required="true">
+                  <option value="" selected>विकल्प चुनें</option>
+                  <option value="Yes">हाँ</option>
+                  <option value="No">नहीं</option>
+                </select>
+                <div *ngIf="submitted && f['mealsRequired'].errors" class="invalid-feedback">
+                  <div *ngIf="f['mealsRequired'].errors['required']">Meals Required is required</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="noOfMembers" class="form-label">Number of Family Members <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="noOfMembers" formControlName="noOfMembers" readonly [value]="familyMembers.length + 1"
+                       [ngClass]="{ 'is-invalid': submitted && (f['noOfMembers'].errors || frmValidate.errors?.['noOfMembersMismatch']) }" style="border-radius: 10px;"
+                       attr.data-field="noOfMembers" aria-required="true">
+                <div *ngIf="submitted && f['noOfMembers'].errors" class="invalid-feedback">
+                  <div *ngIf="f['noOfMembers'].errors['required']">Number of Family Members is required</div>
+                  <div *ngIf="f['noOfMembers'].errors['min']">Minimum 0 members</div>
+                  <div *ngIf="f['noOfMembers'].errors['max']">Maximum 10 members allowed</div>
+                </div>
+                <div *ngIf="submitted && frmValidate.errors?.['noOfMembersMismatch']" class="invalid-feedback">
+                  Number of family members does not match the added members
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="healthProblem" class="form-label">Health Problems (if any)</label>
+                <input type="text" class="form-control" id="healthProblem" formControlName="healthProblem" placeholder="स्वास्थ्य समस्याएं दर्ज करें" maxlength="255"
+                       [ngClass]="{ 'is-invalid': submitted && f['healthProblem'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('healthProblem')" attr.data-field="healthProblem">
+                <div *ngIf="submitted && f['healthProblem'].errors" class="invalid-feedback">
+                  <div *ngIf="f['healthProblem'].errors['maxlength']">Maximum 255 characters allowed</div>
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="remarks" class="form-label">Remarks</label>
+                <input type="text" class="form-control" id="remarks" formControlName="remarks" placeholder="टिप्पणियां दर्ज करें" maxlength="255"
+                       [ngClass]="{ 'is-invalid': submitted && f['remarks'].errors }" style="border-radius: 10px;" (focus)="setCurrentField('remarks')" attr.data-field="remarks">
+                <div *ngIf="submitted && f['remarks'].errors" class="invalid-feedback">
+                  <div *ngIf="f['remarks'].errors['maxlength']">Maximum 255 characters allowed</div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="true" id="isTermsAndCondtionAccepted" formControlName="isTermsAndCondtionAccepted"
+                         [ngClass]="{ 'is-invalid': submitted && f['isTermsAndCondtionAccepted'].errors }" attr.data-field="isTermsAndCondtionAccepted" aria-required="true">
+                  <label class="form-check-label" for="isTermsAndCondtionAccepted">
+                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsAndCondition" style="color: #c71585;">Terms and Conditions</a> and
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#privacypolicy" style="color: #c71585;">Privacy Policy</a>.
+                  </label>
+                  <div *ngIf="submitted && f['isTermsAndCondtionAccepted'].errors" class="invalid-feedback">
+                    <div *ngIf="f['isTermsAndCondtionAccepted'].errors['required']">Please accept Terms and Conditions</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-4">
+              <button type="button" class="btn btn-outline-secondary px-4 py-2 me-2" (click)="previousSection()" style="border-radius: 25px;" aria-label="Previous section">Previous</button>
+              <input type="submit" class="btn btn-primary px-5 py-2" value="Submit" style="background-color: #c71585; border-color: #c71585; border-radius: 25px;"
+                     [disabled]="isFormInvalidForSubmit()" aria-label="Submit registration">
+              <button type="button" class="btn btn-outline-secondary px-4 py-2 ms-2" (click)="onReset()" style="border-radius: 25px;" aria-label="Reset form">Reset</button>
+            </div>
+            <div class="text-center mt-3">
+              <span style="color: #555;">Already Registered? <a href="/login" style="color: #ff6b6b; font-weight: 600;">Login Now</a></span>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+    <!-- Floating Microphone Button -->
+    <button type="button" class="btn btn-light shadow-lg" [ngClass]="{'disabled': !currentField}" (click)="toggleVoiceInput($event)" (touchstart)="toggleVoiceInput($event)"
+            style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000;"
+            title="Select a field to enable voice input" attr.data-field="floating-mic" aria-label="Toggle voice input">
+      <i class="fas" [ngClass]="{'fa-play-circle': !isListening, 'fa-pause-circle': isListening, 'text-magenta': !isListening, 'text-warning': isListening}" style="font-size: 30px;"></i>
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 15px; border: none;">
+          <div class="modal-header" style="background: linear-gradient(90deg, #c71585, #db7093); color: white; border-radius: 15px 15px 0 0;">
+            <h5 class="modal-title" id="responseModalLabel">{{ userMessage ? 'Error' : 'Success' }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()" aria-label="Close modal"></button>
+          </div>
+          <div class="modal-body">
+            <p *ngIf="!userMessage" style="color: #c71585; font-weight: 500;">User Registered Successfully</p>
+            <p *ngIf="userMessage" style="color: #ff6b6b; font-weight: 500;">{{ userMessage }}</p>
+          </div>
+          <div class="modal-footer" style="border-top: none;">
+            <a class="btn btn-primary" href="/login" data-bs-dismiss="modal" style="background-color: #c71585; border-color: #c71585; border-radius: 25px;" *ngIf="!userMessage" (click)="redirectToLogin()" aria-label="Go to login">Login</a>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" (click)="closeModel()" style="border-radius: 25px;" aria-label="Close modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate__animated.animate__fadeIn {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    .form-control, .form-select {
+      transition: all 0.3s ease;
+    }
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 0.25rem rgba(199, 21, 133, 0.25);
+      border-color: #c71585;
+    }
+    .btn-primary:hover {
+      background-color: #db7093;
+      border-color: #db7093;
+    }
+    .btn-magenta {
+      background-color: #c71585;
+      border-color: #c71585;
+      color: white;
+    }
+    .btn-magenta:hover {
+      background-color: #db7093;
+      border-color: #db7093;
+    }
+    .text-magenta {
+      color: #c71585;
+    }
+    .card {
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .btn-light:hover {
+      background-color: #f8f9fa;
+    }
+    .btn-login:hover {
+      background-color: #db7093;
+      border-color: #db7093;
+      transform: translateY(-2px);
+    }
+    /* Banner Responsive Styling */
+    @media (max-width: 576px) {
+      .banner img {
+        max-height: 100px;
+      }
+      .container-fluid {
+        padding: 15px !important;
+      }
+      .card {
+        border: none !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+      }
+      .card-header {
+        border-radius: 0 !important;
+        padding: 15px !important;
+      }
+      .card-body {
+        padding: 15px !important;
+      }
+      .form-control, .form-select, .input-group .btn {
+        border: none !important;
+        border-radius: 8px !important;
+        font-size: 0.9rem !important;
+      }
+      .input-group {
+        border: none !important;
+      }
+      .btn {
+        padding: 8px 16px !important;
+        font-size: 0.9rem !important;
+      }
+      .btn-login {
+        top: 10px !important;
+        right: 10px !important;
+        padding: 8px 16px !important;
+        font-size: 0.9rem !important;
+        border: none !important;
+      }
+      .btn-primary, .btn-outline-secondary, .btn-magenta {
+        border: none !important;
+        padding: 8px 16px !important;
+      }
+      .row.g-3 {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+      }
+      .col-md-4, .col-md-6, .col-12 {
+        padding-right: 5px !important;
+        padding-left: 5px !important;
+      }
+      .progress {
+        margin-bottom: 15px !important;
+      }
+      h1 {
+        font-size: 1.5rem !important;
+      }
+      h4 {
+        font-size: 1.2rem !important;
+      }
+      h5 {
+        font-size: 1rem !important;
+      }
+      .form-label {
+        font-size: 0.9rem !important;
+      }
+      .btn-light {
+        width: 50px !important;
+        height: 50px !important;
+        bottom: 10px !important;
+        right: 10px !important;
+      }
+      .btn-light i {
+        font-size: 24px !important;
+      }
+      .modal-content {
+        border: none !important;
+        border-radius: 0 !important;
+      }
+      .modal-header {
+        border-radius: 0 !important;
+      }
+    }
+  </style>
+</body>
+</html>

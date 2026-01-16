@@ -1,0 +1,86 @@
+<!-- src/app/pages/quiz/quiz.component.html -->
+<div class="quiz-container rrpg-root">
+
+  <!-- HEADER -->
+  <header class="quiz-header rrpg-safe-header">
+    <button class="back-btn rrpg-btn" (click)="goToDashboard()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="header-content">
+      <h1>Spiritual Quiz</h1>
+      <p class="subtitle">Test your knowledge & earn points</p>
+    </div>
+  </header>
+
+  <div class="rrpg-safe-main">
+
+    <!-- 🔒 QUIZ CLOSED -->
+    <div class="results-screen" *ngIf="quizClosed">
+      <div class="results-card">
+        <i class="fas fa-clock trophy-icon"></i>
+        <h2>Quiz is closed</h2>
+        <p>Please open again soon 🙏</p>
+      </div>
+    </div>
+
+    <!-- 🔒 ALREADY SUBMITTED -->
+    <div class="results-screen" *ngIf="!quizClosed && alreadySubmitted">
+      <div class="results-card">
+        <i class="fas fa-lock trophy-icon"></i>
+        <h2>You already gave the quiz</h2>
+        <p class="final-score">
+          Points Earned:
+          <strong>{{ submittedPoints }}</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- 📝 QUIZ QUESTIONS -->
+    <div
+      class="quiz-card"
+      *ngIf="!quizClosed && !alreadySubmitted && currentQuestion && !showResults">
+
+      <div class="question-section">
+        <h3 class="question">{{ currentQuestion.question }}</h3>
+        <div class="question-icon">
+          <i [class]="currentQuestion.icon"></i>
+        </div>
+      </div>
+
+      <div class="options-grid">
+        <div
+          *ngFor="let option of currentQuestion.options"
+          class="option-card"
+          [class.selected]="selectedOption === option"
+          [class.correct]="showResult && currentQuestion.isCorrect && selectedOption === option"
+          [class.incorrect]="showResult && !currentQuestion.isCorrect && selectedOption === option"
+          (click)="selectOption(option)">
+          <span class="option-letter">{{ getOptionLetter(option) }}</span>
+          <span class="option-text">{{ option }}</span>
+        </div>
+      </div>
+
+      <button
+        class="next-btn rrpg-btn"
+        (click)="isLastQuestion ? submitQuiz() : nextQuestion()"
+        [disabled]="!showResult || isSubmitting">
+        {{ isLastQuestion ? 'Submit Quiz' : 'Next Question' }}
+      </button>
+    </div>
+
+    <!-- 🎉 RESULT (AFTER SUBMIT) -->
+    <div class="results-screen" *ngIf="showResults && !alreadySubmitted">
+      <div class="results-card">
+        <i class="fas fa-trophy trophy-icon"></i>
+        <h2>Congratulations!</h2>
+        <p class="final-score">
+          You scored
+          <strong>{{ earnedPoints }}</strong> /
+          {{ totalPossiblePoints }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>

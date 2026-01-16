@@ -1,0 +1,409 @@
+<div class="leaderboard-container">
+
+  <style>
+    .leaderboard-container {
+      min-height: 100vh;
+      background: #f5f7fa;
+      padding: 16px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-y: auto;
+    }
+
+    /* Header Styles */
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 12px;
+    }
+
+    .back-button {
+      background: white;
+      border: 1px solid #e0e0e0;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .back-button:hover {
+      background: #f5f5f5;
+      transform: translateX(-2px);
+    }
+
+    .back-icon {
+      color: #1e3a8a;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .title {
+      color: #1e3a8a;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 14px;
+      margin: 4px 0 0 0;
+    }
+
+    /* Current User Card */
+    .current-user-card {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+      animation: slideInUp 0.5s ease;
+    }
+
+    .current-user-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translate(-50%, -50%); }
+      50% { transform: translate(-30%, -30%); }
+    }
+
+    .user-rank-badge {
+      background: white;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1;
+    }
+
+    .rank-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4f46e5;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      z-index: 1;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #4f46e5;
+      font-size: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-position {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      margin: 2px 0 0 0;
+    }
+
+    .user-points {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .points-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .points-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 4px;
+    }
+
+    /* Top Members Section */
+    .top-members-section {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      animation: slideInUp 0.6s ease;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .trophy-icon {
+      font-size: 24px;
+    }
+
+    .section-title {
+      color: #333;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Members List */
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .member-item:nth-child(1) { animation-delay: 0.1s; }
+    .member-item:nth-child(2) { animation-delay: 0.15s; }
+    .member-item:nth-child(3) { animation-delay: 0.2s; }
+    .member-item:nth-child(4) { animation-delay: 0.25s; }
+    .member-item:nth-child(5) { animation-delay: 0.3s; }
+    .member-item:nth-child(6) { animation-delay: 0.35s; }
+    .member-item:nth-child(7) { animation-delay: 0.4s; }
+    .member-item:nth-child(8) { animation-delay: 0.45s; }
+    .member-item:nth-child(9) { animation-delay: 0.5s; }
+    .member-item:nth-child(10) { animation-delay: 0.55s; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .member-item:hover {
+      background: #e9ecef;
+      transform: translateX(4px);
+    }
+
+    .member-item.top-three {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #fbbf24;
+    }
+
+    .member-rank {
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .medal {
+      font-size: 28px;
+    }
+
+    .rank-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .member-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      font-size: 14px;
+    }
+
+    .member-info {
+      flex: 1;
+    }
+
+    .member-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .member-points {
+      font-size: 18px;
+      font-weight: 700;
+      color: #4f46e5;
+    }
+
+    /* Motivational Footer */
+    .motivational-footer {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      animation: slideInUp 0.7s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .motivation-text {
+      color: #1e3a8a;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    .blessing-text {
+      color: #f97316;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+      .title {
+        font-size: 24px;
+      }
+      
+      .current-user-card {
+        padding: 16px;
+      }
+      
+      .points-number {
+        font-size: 28px;
+      }
+    }
+  </style>
+
+  <!-- Header -->
+  <div class="header">
+    <button class="back-button" (click)="goBack()">
+      <span class="back-icon">←</span>
+    </button>
+    <div class="header-content">
+      <h1 class="title">Leaderboard</h1>
+      <p class="subtitle">Top performers of the journey</p>
+    </div>
+  </div>
+
+  <!-- Current User Card -->
+  <div class="current-user-card">
+    <div class="user-rank-badge">
+      <span class="rank-number">{{ currentUser.rank }}</span>
+    </div>
+    <div class="user-info">
+      <div class="user-avatar">
+        {{ getInitials(currentUser.name) }}
+      </div>
+      <div class="user-details">
+        <h3 class="user-name">{{ currentUser.name }}</h3>
+        <p class="user-position">Your Position</p>
+      </div>
+    </div>
+    <div class="user-points">
+      <span class="points-number">{{ currentUser.points }}</span>
+      <span class="points-label">Points</span>
+    </div>
+  </div>
+
+  <!-- Top 10 Members Section -->
+  <div class="top-members-section">
+    <div class="section-header">
+      <span class="trophy-icon">🏆</span>
+      <h2 class="section-title">Top 10 Members</h2>
+    </div>
+    <div class="members-list">
+      <div
+        *ngFor="let member of topMembers"
+        class="member-item"
+        [class.top-three]="member.rank <= 3">
+        
+        <div class="member-rank">
+          <span *ngIf="member.rank <= 3" class="medal">{{ getMedalIcon(member.rank) }}</span>
+          <span *ngIf="member.rank > 3" class="rank-text">{{ member.rank }}</span>
+        </div>
+        <div class="member-avatar">
+          {{ getInitials(member.name) }}
+        </div>
+        <div class="member-info">
+          <span class="member-name">{{ member.name }}</span>
+        </div>
+        <div class="member-points">
+          <span class="points">{{ member.points }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Motivational Footer -->
+  <div class="motivational-footer">
+    <p class="motivation-text">Keep completing tasks to climb higher!</p>
+    <p class="blessing-text">🙏 Jai Jinendra 🙏</p>
+  </div>
+
+</div>

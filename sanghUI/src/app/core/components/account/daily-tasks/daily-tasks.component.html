@@ -1,0 +1,204 @@
+<!-- src/app/pages/daily-tasks/daily-tasks.component.html -->
+<div class="daily-tasks-container rrpg-root">
+  <!-- iOS + Android Compatibility (inline like previous pages) -->
+  <style>
+    * { box-sizing: border-box; }
+    :root{
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+    /* Root: fixes iOS 100vh + random horizontal scroll */
+    .rrpg-root{
+      width: 100%;
+      min-height: 100vh; /* fallback */
+      min-height: 100dvh; /* correct for modern iOS/Android */
+      overflow-x: clip; /* avoid iOS sideways scroll */
+      background: #f3f4f6;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* Header: make it notch-safe */
+    .tasks-header{
+      position: relative;
+      padding-top: calc(1.25rem + var(--safe-top));
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: 1rem;
+    }
+    /* Back button */
+    .back-btn{
+      position: absolute;
+      top: calc(0.9rem + var(--safe-top));
+      left: calc(0.9rem + var(--safe-left));
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 24, 39, 0.12);
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      z-index: 5;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .back-btn:active{
+      transform: scale(0.98);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+    }
+    /* Make space so title doesn't overlap with back button */
+    .header-content{
+      padding-left: 52px;
+    }
+    /* Main grid wrapper padding: bottom safe area so button not hidden behind home bar */
+    .tasks-grid{
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+    }
+    /* Submit section: safe-area bottom padding */
+    .submit-section{
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: calc(1rem + var(--safe-bottom));
+    }
+    /* Better iOS tap feel */
+    .task-card, .submit-btn, .toggle-switch{
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+  </style>
+
+  <header class="tasks-header">
+    <!-- ✅ Back button - KEPT -->
+    <button class="back-btn" type="button" (click)="goBackToDashboard()" aria-label="Back">
+      <span style="font-size: 18px; line-height: 1;">←</span>
+    </button>
+
+    <div class="header-content">
+      <h1>Daily Spiritual Tasks</h1>
+      <p class="subtitle">Complete your daily sadhana and earn points</p>
+      <div class="points-summary">
+        <span class="total-points">
+          Today's Points: <strong>{{ earnedPoints }} / 70</strong>
+        </span>
+        <span class="streak">Streak: <strong>{{ streak }} days</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="tasks-grid">
+    <!-- Task 1: पादविहारी -->
+    <div class="task-card" [class.completed]="tasks[0].completed">
+      <div class="task-icon">🚶</div>
+      <div class="task-content">
+        <h3>पादविहारी</h3>
+        <p class="task-desc">स्वस्थ जीवन यात्रा</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[0].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Task 2: भूमि संवरी -->
+    <div class="task-card" [class.completed]="tasks[1].completed">
+      <div class="task-icon">🌿</div>
+      <div class="task-content">
+        <h3>भूमि संवरी</h3>
+        <p class="task-desc">प्राकृतिक विश्राम</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[1].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Task 3: ब्रह्मचारी -->
+    <div class="task-card" [class.completed]="tasks[2].completed">
+      <div class="task-icon">🕉️</div>
+      <div class="task-content">
+        <h3>ब्रह्मचारी</h3>
+        <p class="task-desc">संयमित जीवन</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[2].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Task 4: सचित्ताहारी -->
+    <div class="task-card" [class.completed]="tasks[3].completed">
+      <div class="task-icon">🍽️</div>
+      <div class="task-content">
+        <h3>सचित्ताहारी</h3>
+        <p class="task-desc">सात्विक आहार</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[3].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Task 5: फलाहारी -->
+    <div class="task-card" [class.completed]="tasks[4].completed">
+      <div class="task-icon">🍎</div>
+      <div class="task-content">
+        <h3>एकाहारी</h3>
+        <p class="task-desc">प्राकृतिक पोषण</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[4].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Task 6: आवश्यकतावादी -->
+    <div class="task-card" [class.completed]="tasks[5].completed">
+      <div class="task-icon">🙏</div>
+      <div class="task-content">
+        <h3>आवश्यकतावादी</h3>
+        <p class="task-desc">सरल जीवन</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[5].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Task 7: प्रतिक्रमण -->
+    <div class="task-card" [class.completed]="tasks[6].completed">
+      <div class="task-icon">🪔</div>
+      <div class="task-content">
+        <h3>प्रतिक्रमण</h3>
+        <p class="task-desc">आत्मशुद्धि साधना</p>
+        <div class="points">+10 pts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="tasks[6].completed" (change)="updatePoints()">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="submit-section">
+    <button class="submit-btn" (click)="submitTasks()" [disabled]="!anyTaskCompleted">
+      Submit Today's Progress
+    </button>
+    <p class="note">Tasks reset daily at 12:00 AM</p>
+  </div>
+</div>

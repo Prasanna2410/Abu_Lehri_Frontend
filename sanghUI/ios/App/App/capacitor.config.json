@@ -1,0 +1,10 @@
+{
+	"appId": "com.shreesangh.utsav",
+	"appName": "RRP Sangh",
+	"webDir": "dist/sanghUI",
+	"packageClassList": [
+		"SpeechRecognition",
+		"AppPlugin",
+		"PreferencesPlugin"
+	]
+}

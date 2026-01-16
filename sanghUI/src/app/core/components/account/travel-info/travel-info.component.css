@@ -1,0 +1,138 @@
+.ti-root {
+  min-height: 100dvh;
+  background: #f7f9ff;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+}
+
+.ti-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+}
+
+.ti-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ti-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.ti-title-main {
+  font-weight: 900;
+  color: #1d3273;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.ti-title-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ti-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 14px 12px 24px;
+}
+
+.ti-status {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+.ti-error {
+  color: #b91c1c;
+  border-color: rgba(185, 28, 28, 0.25);
+}
+
+.ti-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.ti-card-head {
+  margin-bottom: 12px;
+}
+
+.ti-card-title {
+  font-weight: 900;
+  color: #1d3273;
+  font-size: 15px;
+}
+
+.ti-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.ti-left {
+  min-width: 0;
+}
+
+.ti-flight-label {
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.ti-airline {
+  font-size: 13px;
+  color: #1d3273;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+
+.ti-time {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.ti-right {
+  text-align: right;
+  min-width: 92px;
+}
+
+.ti-pnr-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: #6b7280;
+  letter-spacing: 0.08em;
+}
+
+.ti-pnr {
+  font-size: 16px;
+  font-weight: 1000;
+  color: #111827;
+  margin-top: 6px;
+}

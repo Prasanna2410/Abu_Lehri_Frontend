@@ -1,0 +1,320 @@
+<div class="up-root">
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    .up-root {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: clip;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(1200px 700px at 20% 10%, #ffe9e9 0%, transparent 55%),
+                  radial-gradient(1200px 700px at 85% 25%, #e8f0ff 0%, transparent 55%),
+                  radial-gradient(1200px 700px at 55% 90%, #e6ffef 0%, transparent 55%),
+                  linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      display: flex;
+      flex-direction: column;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Topbar */
+    .up-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+
+      padding-top: calc(0.7rem + var(--safe-top));
+      padding-left: calc(1rem + var(--safe-left));
+      padding-right: calc(1rem + var(--safe-right));
+      padding-bottom: 0.75rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .up-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .up-back {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      background: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.10);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .up-back:active { transform: translateY(1px); }
+
+    .up-title-wrap { min-width: 0; }
+    .up-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #1d3273;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .up-subtitle {
+      margin: 0.15rem 0 0;
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    /* Main container */
+    .up-main {
+      width: 100%;
+      padding: 1rem 1rem calc(1.25rem + var(--safe-bottom));
+      display: flex;
+      justify-content: center;
+    }
+
+    .up-container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .up-hero {
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(191, 219, 254, 0.65);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 255, 0.85));
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .up-hero:before {
+      content: "";
+      position: absolute;
+      inset: -120px -120px auto auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(22, 163, 74, 0.18), transparent 70%);
+      filter: blur(0px);
+    }
+
+    .up-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .up-avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 999px;
+      border: 2px solid rgba(99, 102, 241, 0.25);
+      background: linear-gradient(135deg, rgba(59, 79, 179, 0.12), rgba(22, 163, 74, 0.10));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+      flex: 0 0 auto;
+    }
+
+    .up-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .up-initials {
+      font-weight: 900;
+      color: #1d3273;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    .up-info { min-width: 0; flex: 1; }
+    .up-name {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+    .up-mobile {
+      margin: 0.4rem 0 0;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #1d3273;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(229, 231, 235, 0.85);
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .up-actions {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+    }
+
+    .up-btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 0.95rem 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      color: #ffffff;
+      background: linear-gradient(135deg, #16a34a, #1d3273);
+      box-shadow: 0 16px 34px rgba(22, 163, 74, 0.24);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .up-btn:active { transform: translateY(1px); }
+
+    .up-muted {
+      font-size: 0.78rem;
+      color: #6b7280;
+      line-height: 1.35;
+      margin: 0.4rem 0 0;
+      text-align: center;
+    }
+
+    .up-loading {
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: 800;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+
+    .up-error {
+      margin-top: 1rem;
+      padding: 0.85rem 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      background: rgba(254, 226, 226, 0.6);
+      color: #991b1b;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    /* Hidden file input */
+    .up-file {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+    }
+  </style>
+
+  <!-- Topbar -->
+  <header class="up-topbar">
+    <div class="up-left">
+      <button class="up-back" (click)="goBack($event)" aria-label="Back">
+        <!-- back arrow -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="#1D3273" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="up-title-wrap">
+        <h1 class="up-title">My Profile</h1>
+        <p class="up-subtitle">Photo • Name • Mobile</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="up-main">
+    <div class="up-container">
+
+      <section class="up-hero">
+        <div class="up-row">
+          <!-- Avatar -->
+          <div class="up-avatar">
+            <ng-container *ngIf="profilePhotoUrl; else initialsTpl">
+              <img [src]="profilePhotoUrl" alt="Profile photo" (error)="onImgError()" />
+            </ng-container>
+
+            <ng-template #initialsTpl>
+              <div class="up-initials">{{ initials }}</div>
+            </ng-template>
+          </div>
+
+          <!-- Info -->
+          <div class="up-info">
+            <h2 class="up-name">{{ fullName || 'User' }}</h2>
+
+            <div class="up-mobile">
+              <span aria-hidden="true">📱</span>
+              <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ mobileNumber || '—' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload action -->
+        <div class="up-actions">
+          <input
+            #fileInput
+            class="up-file"
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+          />
+
+          <button class="up-btn" (click)="openFilePicker(fileInput)">
+            Change Profile Photo
+          </button>
+
+          <p class="up-muted">
+            Tip: Use a clear selfie. Max 10MB.
+          </p>
+        </div>
+      </section>
+
+      <div *ngIf="loading" class="up-loading">Loading profile…</div>
+
+      <div *ngIf="errorMessage" class="up-error">
+        {{ errorMessage }}
+      </div>
+
+    </div>
+  </main>
+</div>
