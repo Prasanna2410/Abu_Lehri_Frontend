@@ -66,7 +66,7 @@ export class QuizComponent implements OnInit {
   alreadySubmitted = false;
   submittedPoints = 0;
 
-  private baseUrl = 'http://192.168.1.46:8080/api/quiz';
+  private baseUrl = 'https://registration.lehriratnasangh.live/api/quiz';
 
   constructor(
     private quizService: QuizService,

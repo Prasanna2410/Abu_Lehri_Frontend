@@ -7,7 +7,7 @@ import { AuthService } from './auth.service'; // Adjust path
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'https://192.168.1.46:8080/api/admin';
+  private apiUrl = 'https://registration.lehriratnasangh.live/api/admin';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

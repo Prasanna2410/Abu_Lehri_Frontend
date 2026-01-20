@@ -36,7 +36,7 @@ export class TentInfoComponent implements OnInit {
   errorMessage = '';
 
   // For Capacitor on real device, replace localhost with your machine IP
-  private API_BASE = 'https://192.168.1.46:8080/api/event';
+  private API_BASE = 'https://registration.lehriratnasangh.live/api/event';
 
   constructor(
     private location: Location,

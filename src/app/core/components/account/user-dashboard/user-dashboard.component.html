@@ -2,11 +2,7 @@
 <div (click)="closeProfileMenu()" class="rrpg-root">
   <!-- ===== iOS + Android Compatibility Styles (inline for easy copy/paste) ===== -->
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    /* iOS notch safe-area variables */
+    * { box-sizing: border-box; }
     :root {
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -14,31 +10,20 @@
       --safe-right: env(safe-area-inset-right, 0px);
     }
 
-    /* Root: fix iOS 100vh + 100vw issues */
     .rrpg-root {
       width: 100%;
-      min-height: 100vh; /* fallback */
-      min-height: 100dvh; /* iOS/Android modern */
-      overflow-x: clip; /* prevents iOS horizontal scroll */
-      background: linear-gradient(
-        180deg,
-        #fff1f1 0%,
-        #fff9df 22%,
-        #ffffff 50%,
-        #e6f8ec 78%,
-        #e3e8ff 100%
-      );
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-        sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: clip;
+      background: linear-gradient(180deg,#fff1f1 0%,#fff9df 22%,#ffffff 50%,#e6f8ec 78%,#e3e8ff 100%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
       -webkit-text-size-adjust: 100%;
       overscroll-behavior: none;
-      /* iOS smoother scrolling */
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Topbar: add safe-area padding so it doesn't go under notch */
     .rrpg-topbar {
       position: sticky;
       top: 0;
@@ -49,34 +34,15 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
-
-      /* ✅ key fix: safe area */
       padding-top: calc(0.65rem + var(--safe-top));
       padding-left: calc(0.9rem + var(--safe-left));
       padding-right: calc(0.9rem + var(--safe-right));
       padding-bottom: 0.65rem;
-
-      /* iOS sticky flicker fixes */
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       backface-visibility: hidden;
     }
 
-    /* Responsive logo */
-    .rrpg-logo-wrap {
-      max-width: calc(100vw - 84px);
-    }
-    .rrpg-logo-line {
-      font-size: clamp(18px, 5.2vw, 34px) !important;
-      gap: clamp(6px, 2.2vw, 12px) !important;
-      flex-wrap: wrap;
-      row-gap: 2px;
-    }
-    .rrpg-logo-line2 {
-      font-size: clamp(18px, 5.2vw, 34px) !important;
-    }
-
-    /* Content container */
     .rrpg-main {
       width: 100%;
       padding: 0.9rem 1rem calc(1.25rem + var(--safe-bottom));
@@ -89,7 +55,6 @@
       margin: 0 auto;
     }
 
-    /* Welcome row with phone icon */
     .rrpg-welcome-row {
       display: flex;
       align-items: flex-start;
@@ -102,11 +67,7 @@
       height: 44px;
       border-radius: 999px;
       border: 1px solid rgba(59, 79, 179, 0.22);
-      background: radial-gradient(
-          circle at 30% 30%,
-          rgba(255, 255, 255, 0.9),
-          rgba(255, 255, 255, 0.2)
-        ),
+      background: radial-gradient(circle at 30% 30%,rgba(255,255,255,0.9),rgba(255,255,255,0.2)),
         linear-gradient(135deg, rgba(59, 79, 179, 0.12), rgba(22, 163, 74, 0.12));
       box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
       display: inline-flex;
@@ -117,16 +78,9 @@
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
-    .rrpg-icon-btn:active {
-      transform: translateY(1px);
-    }
+    .rrpg-icon-btn:active { transform: translateY(1px); }
 
-    /* ===== Call Drawer (CSS-only toggle) ===== */
-    .rrpg-call-toggle {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
+    .rrpg-call-toggle { position: absolute; opacity: 0; pointer-events: none; }
 
     .rrpg-call-overlay {
       position: fixed;
@@ -142,8 +96,8 @@
       position: fixed;
       top: 0;
       right: 0;
-      height: 100vh; /* fallback */
-      height: 100dvh; /* iOS/Android modern */
+      height: 100vh;
+      height: 100dvh;
       width: min(360px, 92vw);
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(10px);
@@ -157,14 +111,8 @@
       padding: calc(1rem + var(--safe-top)) 1rem calc(1rem + var(--safe-bottom));
     }
 
-    /* Toggle ON */
-    #rrpgCallToggle:checked ~ .rrpg-call-overlay {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    #rrpgCallToggle:checked ~ .rrpg-call-drawer {
-      transform: translateX(0);
-    }
+    #rrpgCallToggle:checked ~ .rrpg-call-overlay { opacity: 1; pointer-events: auto; }
+    #rrpgCallToggle:checked ~ .rrpg-call-drawer { transform: translateX(0); }
 
     .rrpg-call-header {
       display: flex;
@@ -222,13 +170,7 @@
       letter-spacing: 0.02em;
       margin: 0 0 0.75rem;
     }
-
-    .rrpg-call-actions {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.6rem;
-    }
-
+    .rrpg-call-actions { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
     .rrpg-call-btn {
       width: 100%;
       border: none;
@@ -247,260 +189,109 @@
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
-
-    .rrpg-note {
-      margin-top: 0.8rem;
-      font-size: 0.78rem;
-      color: #6b7280;
-      line-height: 1.35;
-    }
+    .rrpg-note { margin-top: 0.8rem; font-size: 0.78rem; color: #6b7280; line-height: 1.35; }
   </style>
 
-  <!-- Call Drawer Toggle -->
   <input id="rrpgCallToggle" class="rrpg-call-toggle" type="checkbox" />
 
   <!-- Topbar -->
   <header class="rrpg-topbar" style="display: flex; justify-content: space-between; align-items: center; position: relative;">
-    <!-- Left: Logo (fixed left) -->
-    <img 
-      src="/assets/images/Mutha Jirawala Sangh.png" 
+    <img
+      src="/assets/images/Mutha Jirawala Sangh.png"
       alt="Sangh Logo"
-      style="
-        width: 56px; 
-        height: 56px; 
-        object-fit: contain;
-        border-radius: 8px;
-        flex-shrink: 0;
-      "
+      style="width:56px;height:56px;object-fit:contain;border-radius:8px;flex-shrink:0;"
     />
 
-    <!-- Center: Entire title block (perfectly centered) -->
+    <!-- Center title -->
     <div
       style="
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.15rem;
-        pointer-events: none;
+        position:absolute;
+        left:50%;
+        transform:translateX(-50%);
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:0.15rem;
+        pointer-events:none;
       "
     >
-      <div style="pointer-events: auto; text-align: center;">
-        <!-- Main title: आबू लेहरी रत्न -->
-        <div
-          style="
-            display: flex;
-            flex-wrap: wrap;
-            column-gap: 0.3rem;
-            row-gap: 0.05rem;
-            align-items: baseline;
-            justify-content: center;
-          "
-        >
-          <span
-            style="
-              color: #1d3273;
-              font-weight: 800;
-              font-size: 0.9rem;
-              letter-spacing: 0.05em;
-              text-transform: uppercase;
-            "
-          >
-            आबू
-          </span>
-          <span
-            style="
-              color: #dc2626;
-              font-weight: 800;
-              font-size: 0.9rem;
-              letter-spacing: 0.05em;
-              text-transform: uppercase;
-            "
-          >
-            लेहरी
-          </span>
-          <span
-            style="
-              color: #f59e0b;
-              font-weight: 800;
-              font-size: 0.9rem;
-              letter-spacing: 0.05em;
-              text-transform: uppercase;
-            "
-          >
-            रत्न
-          </span>
+      <div style="pointer-events:auto; text-align:center;">
+        <div style="display:flex; flex-wrap:wrap; column-gap:0.3rem; row-gap:0.05rem; align-items:baseline; justify-content:center;">
+          <span style="color:#1d3273;font-weight:800;font-size:0.9rem;letter-spacing:0.05em;text-transform:uppercase;">आबू</span>
+          <span style="color:#dc2626;font-weight:800;font-size:0.9rem;letter-spacing:0.05em;text-transform:uppercase;">लेहरी</span>
+          <span style="color:#f59e0b;font-weight:800;font-size:0.9rem;letter-spacing:0.05em;text-transform:uppercase;">रत्न</span>
         </div>
 
-        <!-- संघोत्सव - centered -->
         <div>
-          <span
-            style="
-              color: #15803d;
-              font-weight: 800;
-              font-size: 0.9rem;
-              letter-spacing: 0.05em;
-              text-transform: uppercase;
-            "
-          >
-            संघोत्सव
-          </span>
+          <span style="color:#15803d;font-weight:800;font-size:0.9rem;letter-spacing:0.05em;text-transform:uppercase;">संघोत्सव</span>
         </div>
 
-        <!-- Yatra Companion - now exactly centered under the main title -->
         <div>
-          <span
-            style="
-              font-size: 0.72rem;
-              color: #4b5563;
-              font-weight: 500;
-            "
-          >
-            Yatra Companion
-          </span>
+          <span style="font-size:0.72rem;color:#4b5563;font-weight:500;">Yatra Companion</span>
         </div>
 
-        <!-- Jain flag underline - centered -->
-        <div
-          style="
-            display: flex;
-            width: 120px;
-            height: 4px;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-top: 0.1rem;
-          "
-        >
-          <div style="flex: 1; background: #ff1f1f;"></div>
-          <div style="flex: 1; background: #ffd62a;"></div>
-          <div style="flex: 1; background: #2a91bd;"></div>
-          <div style="flex: 1; background: #16a34a;"></div>
-          <div style="flex: 1; background: #1d3273;"></div>
+        <div style="display:flex;width:120px;height:4px;border-radius:999px;overflow:hidden;margin-top:0.1rem;">
+          <div style="flex:1;background:#ff1f1f;"></div>
+          <div style="flex:1;background:#ffd62a;"></div>
+          <div style="flex:1;background:#2a91bd;"></div>
+          <div style="flex:1;background:#16a34a;"></div>
+          <div style="flex:1;background:#1d3273;"></div>
         </div>
       </div>
     </div>
 
-    <!-- Right: Profile (fixed right) -->
-    <div
-      (click)="toggleProfileMenu($event)"
-      style="position: relative; cursor: pointer; display: flex; align-items: center; flex-shrink: 0;"
-    >
+    <!-- Right profile -->
+    <div (click)="toggleProfileMenu($event)" style="position:relative; cursor:pointer; display:flex; align-items:center; flex-shrink:0;">
       <ng-container *ngIf="profilePhotoUrl; else initialsAvatar">
         <img
           [src]="profilePhotoUrl"
           alt="Profile"
           (error)="onProfileImgError()"
-          style="
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            object-fit: cover;
-            border: 1px solid #c7d2fe;
-            background: #e0ebff;
-          "
+          style="width:40px;height:40px;border-radius:999px;object-fit:cover;border:1px solid #c7d2fe;background:#e0ebff;"
         />
       </ng-container>
 
       <ng-template #initialsAvatar>
-        <div
-          style="
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            background: #e0ebff;
-            border: 1px solid #c7d2fe;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1d3273;
-            font-weight: 800;
-            font-size: 0.85rem;
-          "
-        >
+        <div style="width:40px;height:40px;border-radius:999px;background:#e0ebff;border:1px solid #c7d2fe;display:flex;align-items:center;justify-content:center;color:#1d3273;font-weight:800;font-size:0.85rem;">
           {{ initials }}
         </div>
       </ng-template>
 
-      <!-- Profile Menu -->
       <div
         *ngIf="showProfileMenu"
-        style="
-          position: absolute;
-          right: 0;
-          top: 52px;
-          width: 230px;
-          background: #ffffff;
-          border-radius: 14px;
-          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
-          border: 1px solid #e5e7eb;
-          overflow: hidden;
-          z-index: 80;
-        "
+        style="position:absolute; right:0; top:52px; width:230px; background:#ffffff; border-radius:14px;
+               box-shadow:0 18px 45px rgba(15, 23, 42, 0.16); border:1px solid #e5e7eb; overflow:hidden; z-index:80;"
       >
-        <div
-          style="
-            background: linear-gradient(135deg, #1d3273, #16a34a);
-            padding: 0.9rem 1rem;
-            color: #ffffff;
-          "
-        >
-          <div style="font-weight: 700; font-size: 0.9rem">
-            {{ userData.name }}
-          </div>
-          <div style="font-size: 0.75rem; opacity: 0.95">
-            Mobile: {{ mobileNumber }}
-          </div>
+        <div style="background: linear-gradient(135deg, #1d3273, #16a34a); padding: 0.9rem 1rem; color: #ffffff;">
+          <div style="font-weight:700; font-size:0.9rem">{{ userData.name }}</div>
+          <div style="font-size:0.75rem; opacity:0.95">Mobile: {{ mobileNumber }}</div>
         </div>
 
-        <div style="height: 1px; background: #e5e7eb"></div>
+        <div style="height:1px; background:#e5e7eb"></div>
 
         <button
           (click)="goToProfile()"
-          style="
-            width: 100%;
-            padding: 0.9rem 1rem;
-            background: transparent;
-            border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: #1f2937;
-            cursor: pointer;
-          "
+          style="width:100%; padding:0.9rem 1rem; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center;
+                 font-size:0.85rem; color:#1f2937; cursor:pointer;"
         >
           <span>My Profile</span>
-          <span style="font-size: 0.9rem; color: #6b7280">›</span>
+          <span style="font-size:0.9rem; color:#6b7280">›</span>
         </button>
 
         <button
           (click)="logout($event)"
-          style="
-            width: 100%;
-            padding: 0.9rem 1rem 1rem;
-            background: transparent;
-            border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: #b91c1c;
-            cursor: pointer;
-          "
+          style="width:100%; padding:0.9rem 1rem 1rem; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center;
+                 font-size:0.85rem; color:#b91c1c; cursor:pointer;"
         >
           <span>Logout</span>
-          <span style="font-size: 0.8rem">↗</span>
+          <span style="font-size:0.8rem">↗</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main wrapper -->
   <div class="rrpg-main">
     <div class="rrpg-container">
-
       <!-- Welcome -->
       <section style="margin-bottom: 0.9rem; padding: 0.5rem 0.25rem; text-align: left">
         <div class="rrpg-welcome-row">
@@ -509,23 +300,15 @@
               JAI JINENDRA 🙏
             </div>
 
-            <h1
-              style="
-                font-size: 1.35rem;
-                font-weight: 800;
-                margin: 0;
-                color: #1d3273;
-              "
-            >
+            <h1 style="font-size: 1.35rem; font-weight: 800; margin: 0; color: #1d3273;">
               Welcome, {{ userData.name.split(' ')[0] || 'Sadhak' }}!
             </h1>
 
             <p style="font-size: 0.8rem; color: #6b7280; margin: 0.18rem 0 0">
-              Stay updated with your tent, room & travel details.
+              Stay updated with your tent & travel details.
             </p>
           </div>
 
-          <!-- Phone icon (opens drawer) -->
           <label
             for="rrpgCallToggle"
             class="rrpg-icon-btn"
@@ -544,440 +327,131 @@
         </div>
       </section>
 
-      <!-- ┌───────────────────────────────────────────────┐ -->
-      <!-- │               LEADERBOARD RANK CARD           │ -->
-      <!-- └───────────────────────────────────────────────┘ -->
+      <!-- Leaderboard -->
       <section
         (click)="goToLeaderboard()"
-        style="
-          background: linear-gradient(135deg, #1e40af, #3b82f6);
-          border-radius: 16px;
-          padding: 1.1rem;
-          margin-bottom: 1rem;
-          box-shadow: 0 10px 30px rgba(37, 99, 235, 0.28);
-          color: white;
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
-        "
+        style="background: linear-gradient(135deg, #1e40af, #3b82f6);
+               border-radius: 16px; padding: 1.1rem; margin-bottom: 1rem;
+               box-shadow: 0 10px 30px rgba(37, 99, 235, 0.28);
+               color: white; cursor: pointer; position: relative; overflow: hidden;"
       >
-        <!-- Subtle shine effect -->
-        <div style="
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25) 0%, transparent 60%);
-          pointer-events: none;
-        "></div>
+        <div style="position:absolute; inset:0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25) 0%, transparent 60%); pointer-events:none;"></div>
 
-        <div style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2;">
-          <!-- Left side: Trophy + Rank -->
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="
-              width: 62px;
-              height: 62px;
-              background: rgba(255,255,255,0.22);
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 2.3rem;
-              backdrop-filter: blur(4px);
-              border: 2px solid rgba(255,255,255,0.45);
-            ">
+        <div style="display:flex; align-items:center; justify-content:space-between; position:relative; z-index:2;">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="width:62px; height:62px; background: rgba(255,255,255,0.22); border-radius:50%;
+                        display:flex; align-items:center; justify-content:center; font-size:2.3rem;
+                        backdrop-filter: blur(4px); border:2px solid rgba(255,255,255,0.45);">
               🏆
             </div>
             <div>
-              <div style="font-size: 0.9rem; font-weight: 700; opacity: 0.92; text-transform: uppercase; letter-spacing: 1px;">
-                Your Rank
-              </div>
-              <div style="font-size: 2.1rem; font-weight: 900; line-height: 1;">
-                #{{ userData.rank || '68' }}
-              </div>
-              <div style="font-size: 0.85rem; opacity: 0.9; margin-top: 0.1rem;">
-                out of 1500
-              </div>
+              <div style="font-size:0.9rem; font-weight:700; opacity:0.92; text-transform:uppercase; letter-spacing:1px;">Your Rank</div>
+              <div style="font-size:2.1rem; font-weight:900; line-height:1;">#{{ userData.rank || '68' }}</div>
+              <div style="font-size:0.85rem; opacity:0.9; margin-top:0.1rem;">out of 1500</div>
             </div>
           </div>
 
-          <!-- Right side: Points -->
-          <div style="text-align: right;">
-            <div style="font-size: 0.8rem; opacity: 0.9; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 1px;">
-              Points
-            </div>
-            <div style="
-              font-size: 2.1rem;
-              font-weight: 900;
-              background: rgba(255,255,255,0.25);
-              backdrop-filter: blur(6px);
-              padding: 0.4rem 1rem;
-              border-radius: 14px;
-              border: 1px solid rgba(255,255,255,0.35);
-            ">
+          <div style="text-align:right;">
+            <div style="font-size:0.8rem; opacity:0.9; margin-bottom:0.25rem; text-transform:uppercase; letter-spacing:1px;">Points</div>
+            <div style="font-size:2.1rem; font-weight:900; background: rgba(255,255,255,0.25);
+                        backdrop-filter: blur(6px); padding:0.4rem 1rem; border-radius:14px; border:1px solid rgba(255,255,255,0.35);">
               {{ userData.points || '120' }} ★
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Event card -->
+      <!-- ✅ Next Event card (FIXED date) -->
       <section
         (click)="goToEvents()"
-        style="
-          background: linear-gradient(135deg, #fff9df, #e6f8ec);
-          border-radius: 16px;
-          padding: 1rem;
-          border: 1px solid #fde68a;
-          box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-          margin-bottom: 0.95rem;
-          cursor: pointer;
-        "
+        style="background: linear-gradient(135deg, #fff9df, #e6f8ec);
+               border-radius: 16px; padding: 1rem; border: 1px solid #fde68a;
+               box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+               margin-bottom: 0.95rem; cursor: pointer;"
       >
-        <div
-          style="
-            display: flex;
-            gap: 0.85rem;
-            align-items: flex-start;
-            justify-content: space-between;
-          "
-        >
-          <!-- LEFT -->
-          <div style="flex: 1 1 50%; min-width: 0">
-            <div
-              style="
-                font-size: 0.7rem;
-                color: #b45309;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                font-weight: 800;
-              "
-            >
+        <div style="display:flex; gap:0.85rem; align-items:flex-start; justify-content:space-between;">
+          <div style="flex:1 1 50%; min-width:0">
+            <div style="font-size:0.7rem; color:#b45309; text-transform:uppercase; letter-spacing:0.08em; font-weight:800;">
               Next Event
             </div>
 
             <div style="margin-top: 0.35rem">
-              <div
-                style="
-                  font-size: 0.98rem;
-                  font-weight: 900;
-                  color: #1d3273;
-                  line-height: 1.22;
-                  overflow-wrap: anywhere;
-                "
-              >
+              <div style="font-size:0.98rem; font-weight:900; color:#1d3273; line-height:1.22; overflow-wrap:anywhere;">
                 {{ userData.nextEventTitle || 'Upcoming Yatra' }}
               </div>
 
-              <div style="margin-top: 0.25rem; font-size: 0.82rem; color: #4b5563">
-                Starts 7th {{ userData.eventStart }}
+              <div style="margin-top:0.25rem; font-size:0.82rem; color:#4b5563">
+                Date: {{ userData.nextEventDateLabel }}
               </div>
             </div>
           </div>
 
-          <!-- RIGHT -->
-          <div style="flex: 1 1 50%; min-width: 0; text-align: right">
-            <div
-              style="
-                font-size: 0.7rem;
-                color: #065f46;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                font-weight: 800;
-                margin-bottom: 0.35rem;
-              "
-            >
+          <div style="flex:1 1 50%; min-width:0; text-align:right">
+            <div style="font-size:0.7rem; color:#065f46; text-transform:uppercase; letter-spacing:0.08em; font-weight:800; margin-bottom:0.35rem;">
               Starts in
             </div>
 
-            <div
-              style="
-                border-radius: 14px;
-                border: 1px solid rgba(22, 163, 74, 0.25);
-                background: rgba(255, 255, 255, 0.78);
-                box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
-                padding: 0.6rem 0.65rem;
-                width: 100%;
-              "
-            >
-              <ng-container
-                *ngIf="(userData.countdown || '').includes('minutes'); else plainCountdown"
-              >
-                <div
-                  style="
-                    font-size: 0.92rem;
-                    font-weight: 900;
-                    color: #16a34a;
-                    line-height: 1.15;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                >
-                  {{ (userData.countdown || '').split('minutes')[0] }}minutes
-                </div>
-
-                <div
-                  style="
-                    margin-top: 0.18rem;
-                    font-size: 0.9rem;
-                    font-weight: 900;
-                    color: #16a34a;
-                    line-height: 1.15;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                >
-                  {{ ((userData.countdown || '').split('minutes')[1] || '').trim() }}
-                </div>
-              </ng-container>
-
-              <ng-template #plainCountdown>
-                <div
-                  style="
-                    font-size: 0.92rem;
-                    font-weight: 900;
-                    color: #16a34a;
-                    line-height: 1.15;
-                    overflow-wrap: anywhere;
-                  "
-                >
-                  {{ userData.countdown }}
-                </div>
-              </ng-template>
+            <div style="border-radius:14px; border:1px solid rgba(22, 163, 74, 0.25); background: rgba(255,255,255,0.78);
+                        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06); padding:0.6rem 0.65rem; width:100%;">
+              <div style="font-size:0.92rem; font-weight:900; color:#16a34a; line-height:1.15; overflow-wrap:anywhere;">
+                {{ userData.countdown }}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Grid cards -->
-      <section
-        style="
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.8rem;
-          margin-bottom: 0.9rem;
-        "
-      >
+      <section style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.9rem;">
         <!-- Tent Card -->
         <div
           (click)="goToTentInfo()"
-          style="
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 0.9rem;
-            border: 1px solid #bbf7d0;
-            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.08);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          "
+          style="background:#ffffff; border-radius:16px; padding:0.9rem; border:1px solid #bbf7d0;
+                 box-shadow:0 8px 24px rgba(22, 163, 74, 0.08); cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;"
         >
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 0.45rem;
-            "
-          >
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border-radius: 12px;
-                background: linear-gradient(135deg, #bbf7d0, #4ade80);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.3rem;
-              "
-              aria-label="Tent"
-            >
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+            <div style="width:40px; height:40px; border-radius:12px; background: linear-gradient(135deg, #bbf7d0, #4ade80);
+                        display:flex; align-items:center; justify-content:center; font-size:1.3rem;" aria-label="Tent">
               ⛺
             </div>
-            <span
-              style="
-                font-size: 0.7rem;
-                color: #6b7280;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-              "
-              >Your Tent</span
-            >
+            <span style="font-size:0.7rem; color:#6b7280; text-transform:uppercase; letter-spacing:0.08em;">Your Tent</span>
           </div>
-          <div
-            style="
-              font-size: 1.9rem;
-              font-weight: 800;
-              color: #1d3273;
-              line-height: 1.1;
-            "
-          >
+
+          <div style="font-size:1.9rem; font-weight:800; color:#1d3273; line-height:1.1;">
             {{ userData.tentNumber || '—' }}
           </div>
-          <div style="margin-top: 0.3rem; font-size: 0.75rem; color: #6b7280">
-            Tap to view tent members.
-          </div>
+
+          <div style="margin-top:0.3rem; font-size:0.75rem; color:#6b7280">Tap to view tent members.</div>
         </div>
 
-        <!-- Room Card -->
-        <div
-          (click)="goToRoomInfo()"
-          style="
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 0.9rem;
-            border: 1px solid #bfdbfe;
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          "
-        >
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 0.45rem;
-            "
-          >
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border-radius: 12px;
-                background: linear-gradient(135deg, #bfdbfe, #60a5fa);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.3rem;
-              "
-              aria-label="Room"
-            >
-              🛏️
-            </div>
-
-            <span
-              style="
-                font-size: 0.7rem;
-                color: #6b7280;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-              "
-            >
-              Your Room
-            </span>
-          </div>
-
-          <div
-            style="
-              font-size: 1.9rem;
-              font-weight: 800;
-              color: #1d3273;
-              line-height: 1.1;
-            "
-          >
-            ROOM NO : {{ userData.roomInbound || userData.roomStay1 || '—' }}
-          </div>
-
-          <div
-            style="
-              margin-top: 0.4rem;
-              font-size: 0.75rem;
-              color: #6b7280;
-              display: flex;
-              flex-direction: column;
-              gap: 0.15rem;
-            "
-          >
-            <span *ngIf="userData.roomInbound">
-              8th January 2026
-            </span>
-
-            <span *ngIf="!userData.roomInbound && userData.roomStay1">
-              12th January 2026
-            </span>
-
-            <span *ngIf="!userData.roomInbound && !userData.roomStay1">
-              Room details will be updated soon.
-            </span>
-          </div>
-        </div>
-
-        <!-- Flight Info Card -->
+        <!-- ✅ Train Info Card (SEAT ONLY from API) -->
         <div
           (click)="goToTravelInfo()"
-          style="
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 0.9rem;
-            border: 1px solid #fde68a;
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.08);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          "
+          style="background:#ffffff; border-radius:16px; padding:0.9rem; border:1px solid #fde68a;
+                 box-shadow:0 8px 24px rgba(245, 158, 11, 0.08);
+                 cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;"
         >
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 0.45rem;
-            "
-          >
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border-radius: 12px;
-                background: #fff7ed;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.3rem;
-              "
-            >
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+            <div style="width:40px; height:40px; border-radius:12px; background:#fff7ed;
+                        display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
               🚂
             </div>
-
-            <span
-              style="
-                font-size: 0.7rem;
-                color: #b45309;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-              "
-            >
-              Train Info
-            </span>
+            <span style="font-size:0.7rem; color:#b45309; text-transform:uppercase; letter-spacing:0.08em;">Train Info</span>
           </div>
 
-          <div *ngIf="flightPreview.showOutbound" style="font-size: 0.8rem; color: #6b7280">
-            PNQ → AMD:
-            <strong>{{ flightPreview.outbound }}</strong>
+          <div *ngIf="trainPreview.showOutbound" style="font-size:0.85rem; color:#6b7280">
+            Seat: <strong>{{ trainPreview.outboundSeat }}</strong>
           </div>
 
-          <div
-            *ngIf="flightPreview.showInbound"
-            style="font-size: 0.8rem; color: #6b7280; margin-top: 0.2rem"
-          >
-            AMD → PNQ:
-            <strong>{{ flightPreview.inbound }}</strong>
+          <div *ngIf="trainPreview.showInbound" style="font-size:0.85rem; color:#6b7280; margin-top:0.2rem">
+            Seat: <strong>{{ trainPreview.inboundSeat }}</strong>
           </div>
 
-          <div
-            *ngIf="!flightPreview.showOutbound && !flightPreview.showInbound"
-            style="font-size: 0.8rem; color: #9ca3af"
-          >
-            Train details will be updated soon.
+          <div *ngIf="!trainPreview.showOutbound && !trainPreview.showInbound" style="font-size:0.85rem; color:#9ca3af">
+            Seat details will be updated soon.
           </div>
 
-          <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #9ca3af">
+          <div style="margin-top:0.5rem; font-size:0.75rem; color:#9ca3af">
             Tap to view full train details →
           </div>
         </div>
@@ -985,156 +459,56 @@
         <!-- Bus Info Card -->
         <div
           (click)="goToBusInfo()"
-          style="
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 0.9rem;
-            border: 1px solid #bbf7d0;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.08);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          "
+          style="background:#ffffff; border-radius:16px; padding:0.9rem; border:1px solid #bbf7d0;
+                 box-shadow:0 8px 24px rgba(16, 185, 129, 0.08);
+                 cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;"
         >
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 0.45rem;
-            "
-          >
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border-radius: 12px;
-                background: #ecfdf5;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1rem;
-              "
-            >
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+            <div style="width:40px; height:40px; border-radius:12px; background:#ecfdf5;
+                        display:flex; align-items:center; justify-content:center; font-size:1rem;">
               🚍
             </div>
-            <span
-              style="
-                font-size: 0.7rem;
-                color: #15803d;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-              "
-              >Bus Info</span
-            >
+            <span style="font-size:0.7rem; color:#15803d; text-transform:uppercase; letter-spacing:0.08em;">Bus Info</span>
           </div>
 
-          <div style="font-size: 0.8rem; color: #6b7280">
+          <div style="font-size:0.8rem; color:#6b7280">
             To Palitana:
-            <strong>{{ userData.flight?.busInbound || '—' }}</strong>
-          </div>
-          <div style="font-size: 0.8rem; color: #6b7280; margin-top: 0.2rem">
-            To Ahmedabad:
-            <strong>{{ userData.flight?.busOutbound || '—' }}</strong>
+            <strong>{{ userData.bus?.busInbound || '—' }}</strong>
           </div>
 
-          <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #9ca3af">
-            Tap to view full bus details →
+          <div style="font-size:0.8rem; color:#6b7280; margin-top:0.2rem">
+            To Ahmedabad:
+            <strong>{{ userData.bus?.busOutbound || '—' }}</strong>
           </div>
+
+          <div style="margin-top:0.5rem; font-size:0.75rem; color:#9ca3af">Tap to view full bus details →</div>
         </div>
 
         <!-- Daily Tasks -->
         <div
           (click)="goToDailyTasks()"
-          style="
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 0.9rem;
-            border: 1px solid #bbf7d0;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.08);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-          "
+          style="background:#ffffff; border-radius:16px; padding:0.9rem; border:1px solid #bbf7d0;
+                 box-shadow:0 8px 24px rgba(16, 185, 129, 0.08);
+                 cursor:pointer; display:flex; flex-direction:column;"
         >
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 0.6rem;
-            "
-          >
-            <div style="display: flex; align-items: center; gap: 0.5rem">
-              <div
-                style="
-                  width: 32px;
-                  height: 32px;
-                  border-radius: 10px;
-                  background: #ecfdf5;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 0.9rem;
-                  color: #16a34a;
-                "
-              >
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem">
+              <div style="width:32px; height:32px; border-radius:10px; background:#ecfdf5;
+                          display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:#16a34a;">
                 ✓
               </div>
-              <h3
-                style="
-                  font-size: 0.85rem;
-                  font-weight: 700;
-                  color: #1d3273;
-                  margin: 0;
-                "
-              >
-                Daily Tasks
-              </h3>
+              <h3 style="font-size:0.85rem; font-weight:700; color:#1d3273; margin:0;">Daily Tasks</h3>
             </div>
           </div>
 
-          <div
-            style="
-              flex: 1;
-              display: flex;
-              flex-direction: column;
-              justify-content: flex-end;
-            "
-          >
-            <div
-              style="
-                height: 6px;
-                background: #e5e7eb;
-                border-radius: 999px;
-                overflow: hidden;
-                margin-bottom: 0.55rem;
-              "
-            >
-              <div
-                [style.width.%]="clamp(userData.dailyTasksPoints)"
-                style="
-                  height: 100%;
-                  background: linear-gradient(90deg, #16a34a, #1d3273);
-                "
-              ></div>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end;">
+            <div style="height:6px; background:#e5e7eb; border-radius:999px; overflow:hidden; margin-bottom:0.55rem;">
+              <div [style.width.%]="clamp(userData.dailyTasksPoints)" style="height:100%; background: linear-gradient(90deg, #16a34a, #1d3273);"></div>
             </div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <span style="font-size: 0.75rem; color: #6b7280">Points</span>
-              <span
-                style="
-                  font-size: 1.4rem;
-                  font-weight: 800;
-                  color: #1d3273;
-                "
-              >
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.75rem; color:#6b7280">Points</span>
+              <span style="font-size:1.4rem; font-weight:800; color:#1d3273;">
                 {{ userData.dailyTasksPoints }}
               </span>
             </div>
@@ -1144,94 +518,28 @@
         <!-- Spiritual Quiz -->
         <div
           (click)="goToQuizes()"
-          style="
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 0.9rem;
-            border: 1px solid #bfdbfe;
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-          "
+          style="background:#ffffff; border-radius:16px; padding:0.9rem; border:1px solid #bfdbfe;
+                 box-shadow:0 8px 24px rgba(37, 99, 235, 0.08);
+                 cursor:pointer; display:flex; flex-direction:column;"
         >
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 0.6rem;
-            "
-          >
-            <div style="display: flex; align-items: center; gap: 0.5rem">
-              <div
-                style="
-                  width: 32px;
-                  height: 32px;
-                  border-radius: 10px;
-                  background: #eff6ff;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 0.9rem;
-                  color: #2563eb;
-                "
-              >
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem">
+              <div style="width:32px; height:32px; border-radius:10px; background:#eff6ff;
+                          display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:#2563eb;">
                 ?
               </div>
-              <h3
-                style="
-                  font-size: 0.85rem;
-                  font-weight: 700;
-                  color: #1d3273;
-                  margin: 0;
-                "
-              >
-                Spiritual Quiz
-              </h3>
+              <h3 style="font-size:0.85rem; font-weight:700; color:#1d3273; margin:0;">Spiritual Quiz</h3>
             </div>
           </div>
 
-          <div
-            style="
-              flex: 1;
-              display: flex;
-              flex-direction: column;
-              justify-content: flex-end;
-            "
-          >
-            <div
-              style="
-                height: 6px;
-                background: #e5e7eb;
-                border-radius: 999px;
-                overflow: hidden;
-                margin-bottom: 0.55rem;
-              "
-            >
-              <div
-                [style.width.%]="clamp(userData.spiritualQuizPoints)"
-                style="
-                  height: 100%;
-                  background: linear-gradient(90deg, #2563eb, #ff1f1f);
-                "
-              ></div>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end;">
+            <div style="height:6px; background:#e5e7eb; border-radius:999px; overflow:hidden; margin-bottom:0.55rem;">
+              <div [style.width.%]="clamp(userData.spiritualQuizPoints)" style="height:100%; background: linear-gradient(90deg, #2563eb, #ff1f1f);"></div>
             </div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <span style="font-size: 0.75rem; color: #6b7280">Points</span>
-              <span
-                style="
-                  font-size: 1.4rem;
-                  font-weight: 800;
-                  color: #1d3273;
-                "
-              >
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.75rem; color:#6b7280">Points</span>
+              <span style="font-size:1.4rem; font-weight:800; color:#1d3273;">
                 {{ userData.spiritualQuizPoints }}
               </span>
             </div>
@@ -1239,151 +547,53 @@
         </div>
       </section>
 
-      <!-- Spiritual music CTA -->
-      <!-- <a
-        href="https://youtu.be/qORcpAjR3i0?si=9kvcHDswFPQfOlSA"
-        target="_blank"
-        rel="noopener noreferrer"
-        style="
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          background: linear-gradient(135deg, #16a34a, #1d3273);
-          color: #ffffff;
-          text-decoration: none;
-          padding: 0.9rem 1rem;
-          font-size: 0.95rem;
-          font-weight: 700;
-          border-radius: 999px;
-          box-shadow: 0 14px 30px rgba(22, 163, 74, 0.35);
-          margin-bottom: 0.75rem;
-        "
-      >
-        <span>LISTEN TO OUR SANGH ANTHEM</span>
-        <span style="font-size: 1.1rem">▶</span>
-      </a> -->
-
       <!-- Instagram CTA -->
       <a
-        href="https://www.instagram.com/rrpg_jaincharipalitsangh?igsh=MWh5NGdmZXRpZ2NvaA=="
+        href="https://www.instagram.com/abu_lehri_ratna_sanghotsav?igsh=YW9ud28wdnZ3b3pk"
         target="_blank"
         rel="noopener noreferrer"
-        style="
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.55rem;
-          background: linear-gradient(
-            135deg,
-            #f58529,
-            #f77737,
-            #dd2a7b,
-            #8134af,
-            #515bd4
-          );
-          color: #ffffff;
-          text-decoration: none;
-          padding: 0.85rem 1rem;
-          font-size: 0.95rem;
-          font-weight: 700;
-          border-radius: 999px;
-          box-shadow: 0 14px 30px rgba(88, 28, 135, 0.35);
-          margin-bottom: 0.75rem;
-        "
+        style="width:100%; display:flex; align-items:center; justify-content:center; gap:0.55rem;
+               background: linear-gradient(135deg,#f58529,#f77737,#dd2a7b,#8134af,#515bd4);
+               color:#ffffff; text-decoration:none; padding:0.85rem 1rem; font-size:0.95rem; font-weight:700;
+               border-radius:999px; box-shadow:0 14px 30px rgba(88, 28, 135, 0.35); margin-bottom:0.75rem;"
       >
-        <!-- Insta icon -->
-        <div
-          style="
-            width: 26px;
-            height: 26px;
-            border-radius: 9px;
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-          "
-        >
-          <div
-            style="
-              width: 12px;
-              height: 12px;
-              border-radius: 999px;
-              border: 2px solid #ffffff;
-            "
-          ></div>
-          <div
-            style="
-              width: 4px;
-              height: 4px;
-              border-radius: 999px;
-              background: #ffffff;
-              position: absolute;
-              top: 4px;
-              right: 4px;
-            "
-          ></div>
+        <div style="width:26px; height:26px; border-radius:9px; border:2px solid rgba(255,255,255,0.9);
+                    display:flex; align-items:center; justify-content:center; position:relative;">
+          <div style="width:12px; height:12px; border-radius:999px; border:2px solid #ffffff;"></div>
+          <div style="width:4px; height:4px; border-radius:999px; background:#ffffff; position:absolute; top:4px; right:4px;"></div>
         </div>
-
         <span>OUR INSTAGRAM</span>
       </a>
     </div>
   </div>
 
   <!-- Call Drawer Overlay + Drawer -->
-  <label
-    class="rrpg-call-overlay"
-    for="rrpgCallToggle"
-    aria-label="Close call drawer"
-  ></label>
+  <label class="rrpg-call-overlay" for="rrpgCallToggle" aria-label="Close call drawer"></label>
 
   <aside class="rrpg-call-drawer" (click)="$event.stopPropagation()">
     <div class="rrpg-call-header">
       <h3 class="rrpg-call-title">
-        <span
-          style="
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            background: linear-gradient(
-              135deg,
-              rgba(22, 163, 74, 0.18),
-              rgba(29, 50, 115, 0.18)
-            );
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-          "
-          aria-hidden="true"
-        >
-          ☎
-        </span>
+        <span style="width:36px;height:36px;border-radius:12px;background: linear-gradient(135deg, rgba(22,163,74,0.18), rgba(29,50,115,0.18));
+                     display:inline-flex;align-items:center;justify-content:center;" aria-hidden="true">☎</span>
         Call Support
       </h3>
 
-      <label for="rrpgCallToggle" class="rrpg-close-btn" aria-label="Close">
-        ✕
-      </label>
+      <label for="rrpgCallToggle" class="rrpg-close-btn" aria-label="Close">✕</label>
     </div>
 
     <div class="rrpg-call-card">
       <div class="rrpg-call-label">Emergency Number</div>
-
-      <div class="rrpg-call-number">+91 80871 26998</div>
+      <div class="rrpg-call-number">+91 95884 65712</div>
 
       <div class="rrpg-call-actions">
-        <a class="rrpg-call-btn" href="tel:+918087126998">
+        <a class="rrpg-call-btn" href="tel:+919588465712">
           <span>Call Now</span>
           <span aria-hidden="true">📞</span>
         </a>
       </div>
 
       <div class="rrpg-note">
-        Tip: If the call doesn’t connect, please try again after some time or
-        contact your group coordinator.
+        Tip: If the call doesn’t connect, please try again after some time or contact your group coordinator.
       </div>
     </div>
   </aside>

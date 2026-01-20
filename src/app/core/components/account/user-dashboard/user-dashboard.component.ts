@@ -29,53 +29,59 @@ interface CountdownDto {
   formatted: string;
 }
 
-interface EventParticipantApiResponse {
+/** Standard backend wrapper */
+interface ApiResponse<T> {
   code: any;
   message: string;
-  details: EventParticipantDetails | null;
+  data: T | null;
 }
 
-interface EventParticipantDetails {
+/** /api/event/user/{mobile}/info -> UserRegistrationSummary */
+type UserRegistrationSummary = {
   fullName?: string;
   mobile?: string;
   tent?: string;
+  [k: string]: any;
+};
 
-  // Accommodation
-  roomStay1?: string;     // 12th Jan room
-  roomInbound?: string;   // 8th Jan room
+/**
+ * /api/event/user/{mobile}/train -> Your Train Details
+ * Keeping extra keys so it works even if backend returns different field names.
+ */
+type UserTrainDetails = {
+  // preferred seat keys (we will try these first)
+  trainOutboundSeat?: string | null;
+  trainInboundSeat?: string | null;
 
-  // Flight PNRS
+  outboundSeat?: string | null;
+  inboundSeat?: string | null;
+
+  train_outbound_seat?: string | null;
+  train_inbound_seat?: string | null;
+
+  // old fields (we will ignore for UI, but keep for compatibility)
   pnrOutbound1?: string | null;
-  pnrOutbound2?: string | null;
-  pnrOutbound3?: string | null;
-  pnrOutbound4?: string | null;
   pnrReturn1?: string | null;
-  pnrReturn2?: string | null;
-  pnrReturn3?: string | null;
-  pnrReturn4?: string | null;
 
   busInbound?: string | null;
   busOutbound?: string | null;
-}
 
+  [k: string]: any;
+};
+
+/** /api/profile/user/{mobile} -> UserProfileResponse */
 interface UserProfileApiResponse {
-  userid: number;
   fullName: string;
   mobileNumber: string;
   profilePhoto: string | null;
 }
 
-// Leaderboard response (adjust according to your actual API)
+/** Leaderboard optional */
 interface LeaderboardResponse {
   rank: number;
   points: number;
-  totalParticipants?: number; // optional
+  totalParticipants?: number;
 }
-
-type FlightSlot = {
-  flightNo: 1 | 2 | 3 | 4;
-  pnr: string;
-};
 
 @Component({
   selector: 'app-user-dashboard',
@@ -91,65 +97,55 @@ export class UserDashboardComponent implements OnInit {
   /** dashboard avatar */
   profilePhotoUrl: string | null = null;
 
-  private API_BASE = 'https://api.shreesanghutsav.com/api/event';
-  private YATRA_API_BASE = 'https://api.shreesanghutsav.com/api/yatra';
-  private PROFILE_API_BASE = 'https://api.shreesanghutsav.com/api/profile';
+  /** Optional kit status */
+  kitGiven: boolean | null = null;
 
-  // Derived preview for flight card
-  flightPreview = {
-    outbound: '—',
-    inbound: '—',
+  // ✅ Based on your backend controllers
+  private API_BASE = 'https://registration.lehriratnasangh.live/api/event';
+  private YATRA_API_BASE = 'https://registration.lehriratnasangh.live/api/yatra';
+  private PROFILE_API_BASE = 'https://registration.lehriratnasangh.live/api/profile';
+
+  // ✅ Train preview for dashboard card (ONLY seat numbers)
+  trainPreview = {
+    outboundSeat: '—',
+    inboundSeat: '—',
     showOutbound: false,
     showInbound: false,
   };
 
   userData: {
     name: string;
+
+    // ✅ Next Event
     countdown: string;
-    eventStart: string;
     nextEventTitle: string;
+    nextEventDateLabel: string; // "26 Jan 2026"
+
+    // ✅ Tent
     tentNumber: string;
-    roomInbound: string;
-    roomStay1: string;
-    roomNumber: string;
+
+    // ✅ Points + rank
     dailyTasksPoints: number;
     spiritualQuizPoints: number;
     rank: number;
     points: number;
-    flight: {
-      pnrOutbound1: string;
-      pnrOutbound2: string;
-      pnrOutbound3: string;
-      pnrOutbound4: string;
-      pnrReturn1: string;
-      pnrReturn2: string;
-      pnrReturn3: string;
-      pnrReturn4: string;
+
+    // ✅ Bus (unchanged)
+    bus: {
       busInbound: string;
       busOutbound: string;
     };
   } = {
     name: 'Loading...',
     countdown: '--d --h --m --s',
-    eventStart: 'January 2026',
     nextEventTitle: '',
+    nextEventDateLabel: '—',
     tentNumber: '—',
-    roomInbound: '',
-    roomStay1: '',
-    roomNumber: '—',
     dailyTasksPoints: 0,
     spiritualQuizPoints: 0,
     rank: 0,
     points: 0,
-    flight: {
-      pnrOutbound1: '—',
-      pnrOutbound2: '—',
-      pnrOutbound3: '—',
-      pnrOutbound4: '—',
-      pnrReturn1: '—',
-      pnrReturn2: '—',
-      pnrReturn3: '—',
-      pnrReturn4: '—',
+    bus: {
       busInbound: '—',
       busOutbound: '—',
     },
@@ -182,18 +178,23 @@ export class UserDashboardComponent implements OnInit {
 
   private loadAll() {
     this.loadProfile();
-    this.loadUserInfo();
-    this.loadAccommodationInfo();
-    this.loadFlightInfo();
+
+    // ✅ matches EventController
+    this.loadUserInfo();     // /info
+    this.loadTrainInfo();    // /train (seat only)
+    this.loadKitStatus();    // /kit-status (optional)
+
+    // ✅ Next event
     this.loadEventCountdown();
-    this.loadLeaderboard();           // ← NEW
+
+    // ⚠️ only keep if endpoint exists
+    this.loadLeaderboard();
   }
 
   // ──────────────────────────────────────────────────────────────
-  //                  NEW: Leaderboard Data
+  //                  Leaderboard (optional)
   // ──────────────────────────────────────────────────────────────
   private loadLeaderboard() {
-    // Adjust endpoint to match your actual API
     const url = `${this.API_BASE}/user/${this.mobile10}/leaderboard`;
 
     this.http.get<LeaderboardResponse>(url).subscribe({
@@ -204,23 +205,26 @@ export class UserDashboardComponent implements OnInit {
         }
       },
       error: () => {
-        // Fallback / silent fail
-        this.userData.rank = 0;
-        this.userData.points = 0;
+        this.userData.rank = this.userData.rank || 0;
+        this.userData.points = this.userData.points || 0;
       },
     });
   }
 
-  /** Dashboard avatar + name from profile API */
+  // ──────────────────────────────────────────────────────────────
+  //                    Profile API
+  // ──────────────────────────────────────────────────────────────
   private loadProfile() {
     const url = `${this.PROFILE_API_BASE}/user/${this.mobile10}`;
+
     this.http.get<UserProfileApiResponse>(url).subscribe({
       next: (res) => {
-        if (res) {
-          this.userData.name = res.fullName || this.userData.name;
-          this.initials = this.getInitials(this.userData.name);
-          this.profilePhotoUrl = this.buildProfilePhotoUrl(res.profilePhoto);
-        }
+        if (!res) return;
+
+        this.userData.name = res.fullName || this.userData.name;
+        this.initials = this.getInitials(this.userData.name);
+
+        this.profilePhotoUrl = this.buildProfilePhotoUrl(res.profilePhoto);
       },
       error: () => {
         this.profilePhotoUrl = null;
@@ -230,10 +234,14 @@ export class UserDashboardComponent implements OnInit {
 
   private buildProfilePhotoUrl(profilePhoto: string | null | undefined): string | null {
     if (!profilePhoto) return null;
-    const parts = profilePhoto.split('/');
+
+    const clean = profilePhoto.replace(/\\/g, '/').trim();
+    const parts = clean.split('/');
     const filename = parts[parts.length - 1];
+
     if (!filename) return null;
-    return `${this.PROFILE_API_BASE}/photo/${filename}?t=${Date.now()}`;
+
+    return `${this.PROFILE_API_BASE}/photo/${encodeURIComponent(filename)}?t=${Date.now()}`;
   }
 
   onProfileImgError() {
@@ -241,185 +249,141 @@ export class UserDashboardComponent implements OnInit {
   }
 
   // ──────────────────────────────────────────────────────────────
-  //                     Existing Methods
+  //            ✅ /api/event/user/{mobile}/info
   // ──────────────────────────────────────────────────────────────
-
-  private trimOrEmpty(v: any): string {
-    return (v ?? '').toString().trim();
-  }
-
-  private recomputeRoomNumber() {
-    const inbound = this.trimOrEmpty(this.userData.roomInbound);
-    const stay = this.trimOrEmpty(this.userData.roomStay1);
-    this.userData.roomNumber = inbound || stay || '—';
-  }
-
   private loadUserInfo() {
     const url = `${this.API_BASE}/user/${this.mobile10}/info`;
-    this.http.get<EventParticipantApiResponse>(url).subscribe({
+
+    this.http.get<ApiResponse<UserRegistrationSummary>>(url).subscribe({
       next: (res) => {
         const ok = String(res?.code) === '200';
-        if (ok && res.details) {
-          const d = res.details;
-          this.userData.name = d.fullName || this.userData.name;
-          this.userData.tentNumber = this.trimOrEmpty(d.tent) || '—';
+        const d: any = res?.data;
+        if (!ok || !d) return;
 
-          this.userData.roomInbound = this.trimOrEmpty(d.roomInbound);
-          this.userData.roomStay1 = this.trimOrEmpty(d.roomStay1);
+        // name
+        this.userData.name =
+          this.pickString(d, ['fullName', 'name', 'fullname']) || this.userData.name;
 
-          this.recomputeRoomNumber();
-          this.initials = this.getInitials(this.userData.name);
-        }
+        // tent
+        this.userData.tentNumber =
+          this.pickString(d, ['tent', 'tentNumber', 'tent_no']) || this.userData.tentNumber;
+
+        this.initials = this.getInitials(this.userData.name);
       },
       error: () => {},
     });
   }
 
-  private normalizeMobile(mobile: string): string {
-    let digits = (mobile || '').replace(/\D/g, '');
-    if (digits.length > 10) digits = digits.substring(digits.length - 10);
-    return digits;
-  }
+  // ──────────────────────────────────────────────────────────────
+  //            ✅ /api/event/user/{mobile}/train
+  //            SHOW ONLY SEAT NUMBER
+  // ──────────────────────────────────────────────────────────────
+  private loadTrainInfo() {
+    const url = `${this.API_BASE}/user/${this.mobile10}/train`;
 
-  private hasValidPnr(v: any): boolean {
-    const s = (v ?? '').toString().trim();
-    if (!s) return false;
-    const up = s.toUpperCase();
-    if (s === '—' || s === '-' || up.includes('NO FLIGHT')) return false;
-    return true;
-  }
+    // reset
+    this.trainPreview = {
+      outboundSeat: '—',
+      inboundSeat: '—',
+      showOutbound: false,
+      showInbound: false,
+    };
 
-  private extractFlightSlots(d: EventParticipantDetails): FlightSlot[] {
-    const candidates: { flightNo: 1 | 2 | 3 | 4; val: any }[] = [
-      { flightNo: 1, val: d.pnrOutbound1 },
-      { flightNo: 2, val: d.pnrOutbound2 },
-      { flightNo: 3, val: d.pnrReturn1 },
-      { flightNo: 4, val: d.pnrReturn2 },
-      { flightNo: 3, val: d.pnrOutbound3 },
-      { flightNo: 4, val: d.pnrOutbound4 },
-      { flightNo: 3, val: d.pnrReturn3 },
-      { flightNo: 4, val: d.pnrReturn4 },
-    ];
-
-    const perNo: Record<number, string[]> = { 1: [], 2: [], 3: [], 4: [] };
-    for (const c of candidates) {
-      if (this.hasValidPnr(c.val)) {
-        perNo[c.flightNo].push(c.val.toString().trim());
-      }
-    }
-
-    const out: FlightSlot[] = [];
-    for (const n of [1, 2, 3, 4] as const) {
-      const list = perNo[n];
-      if (!list.length) continue;
-      const seen = new Set<string>();
-      const unique = list.filter((x) => {
-        const key = x.toUpperCase();
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-      if (unique.length) out.push({ flightNo: n, pnr: unique[0] });
-    }
-
-    return out.sort((a, b) => a.flightNo - b.flightNo);
-  }
-
-  private joinPnrs(slots: FlightSlot[]): string {
-    if (!slots.length) return '—';
-    return slots
-      .sort((a, b) => a.flightNo - b.flightNo)
-      .map((s) => `FL${s.flightNo}: ${s.pnr}`)
-      .join(' • ');
-  }
-
-  private loadFlightInfo() {
-    const url = `${this.API_BASE}/user/${this.mobile10}/flight`;
-
-    this.flightPreview = { outbound: '—', inbound: '—', showOutbound: false, showInbound: false };
-
-    this.http.get<EventParticipantApiResponse>(url).subscribe({
+    this.http.get<ApiResponse<UserTrainDetails>>(url).subscribe({
       next: (res) => {
         const ok = String(res?.code) === '200';
-        if (!ok || !res.details) return;
+        const d: any = res?.data;
+        if (!ok || !d) return;
 
-        const d = res.details;
+        // ✅ Try multiple possible keys from backend for seat
+        const outSeat =
+          this.pickString(d, ['trainOutboundSeat', 'outboundSeat', 'train_outbound_seat']) || '';
+        const inSeat =
+          this.pickString(d, ['trainInboundSeat', 'inboundSeat', 'train_inbound_seat']) || '';
 
-        this.userData.flight = {
-          pnrOutbound1: d.pnrOutbound1 || '—',
-          pnrOutbound2: d.pnrOutbound2 || '—',
-          pnrOutbound3: d.pnrOutbound3 || '—',
-          pnrOutbound4: d.pnrOutbound4 || '—',
-          pnrReturn1: d.pnrReturn1 || '—',
-          pnrReturn2: d.pnrReturn2 || '—',
-          pnrReturn3: d.pnrReturn3 || '—',
-          pnrReturn4: d.pnrReturn4 || '—',
-          busInbound: d.busInbound || '—',
-          busOutbound: d.busOutbound || '—',
+        // ✅ Store BUS too (unchanged)
+        this.userData.bus = {
+          busInbound: this.cleanOrDash(this.pickString(d, ['busInbound', 'bus_inbound'])),
+          busOutbound: this.cleanOrDash(this.pickString(d, ['busOutbound', 'bus_outbound'])),
         };
 
-        const slots = this.extractFlightSlots(d);
-        const outboundSlots = slots.filter((s) => s.flightNo === 1 || s.flightNo === 2);
-        const inboundSlots = slots.filter((s) => s.flightNo === 3 || s.flightNo === 4);
+        // ✅ Preview ONLY seat numbers
+        if (this.cleanOrEmpty(outSeat)) {
+          this.trainPreview.outboundSeat = this.cleanOrEmpty(outSeat);
+          this.trainPreview.showOutbound = true;
+        }
 
-        this.flightPreview.outbound = this.joinPnrs(outboundSlots);
-        this.flightPreview.inbound = this.joinPnrs(inboundSlots);
-        this.flightPreview.showOutbound = outboundSlots.length > 0;
-        this.flightPreview.showInbound = inboundSlots.length > 0;
+        if (this.cleanOrEmpty(inSeat)) {
+          this.trainPreview.inboundSeat = this.cleanOrEmpty(inSeat);
+          this.trainPreview.showInbound = true;
+        }
+
+        // If neither seat is present, remain as —
       },
       error: () => {},
     });
   }
 
-  private loadAccommodationInfo() {
-    const url = `${this.API_BASE}/user/${this.mobile10}/accommodation`;
-    this.http.get<EventParticipantApiResponse>(url).subscribe({
+  // ──────────────────────────────────────────────────────────────
+  //        ✅ /api/event/user/{mobile}/kit-status (optional)
+  // ──────────────────────────────────────────────────────────────
+  private loadKitStatus() {
+    const url = `${this.API_BASE}/user/${this.mobile10}/kit-status`;
+
+    this.http.get<ApiResponse<boolean>>(url).subscribe({
       next: (res) => {
         const ok = String(res?.code) === '200';
-        if (ok && res.details) {
-          const d = res.details;
-
-          if (this.trimOrEmpty(d.tent)) this.userData.tentNumber = this.trimOrEmpty(d.tent);
-
-          const inbound = this.trimOrEmpty(d.roomInbound);
-          const stay = this.trimOrEmpty(d.roomStay1);
-
-          if (inbound) this.userData.roomInbound = inbound;
-          if (stay) this.userData.roomStay1 = stay;
-
-          this.recomputeRoomNumber();
-        }
+        const val = res?.data;
+        if (!ok) return;
+        this.kitGiven = !!val;
       },
-      error: () => {},
+      error: () => {
+        this.kitGiven = null;
+      },
     });
   }
 
+  // ──────────────────────────────────────────────────────────────
+  //                     ✅ Next Event (FIXED)
+  // ──────────────────────────────────────────────────────────────
   private loadEventCountdown() {
     const url = `${this.YATRA_API_BASE}/next-event`;
+
     this.http.get<NextEventResponse>(url).subscribe({
       next: (response) => {
-        if (response?.countdown?.formatted) this.userData.countdown = response.countdown.formatted;
+        const ev = response?.event;
+        const cd = response?.countdown;
 
-        if (response?.event?.gregorianDate) {
-          this.userData.eventStart = new Date(response.event.gregorianDate).toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric',
-          });
+        // Countdown (use formatted directly)
+        this.userData.countdown = cd?.formatted || this.userData.countdown;
+
+        // Title
+        this.userData.nextEventTitle = ev?.title || '';
+
+        // Date (no more hardcoded "26th")
+        if (ev?.gregorianDate) {
+          this.userData.nextEventDateLabel = this.formatEventDate(ev.gregorianDate);
+        } else {
+          this.userData.nextEventDateLabel = '—';
         }
-
-        this.userData.nextEventTitle = response?.event?.title || '';
       },
       error: () => {
         this.userData.countdown = 'Soon';
-        this.userData.eventStart = 'January 2026';
+        this.userData.nextEventDateLabel = '—';
       },
     });
+  }
+
+  private formatEventDate(dateStr: string): string {
+    // dateStr could be "2026-01-26" or ISO
+    const dt = new Date(dateStr);
+    if (isNaN(dt.getTime())) return '—';
+    return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   // ──────────────────────────────────────────────────────────────
   //                        Navigation
   // ──────────────────────────────────────────────────────────────
-
   closeProfileMenu(): void {
     this.showProfileMenu = false;
   }
@@ -438,16 +402,6 @@ export class UserDashboardComponent implements OnInit {
     this.router.navigate(['/tentinfo'], { queryParams: { tent: this.userData.tentNumber } });
   }
 
-  goToRoomInfo() {
-    this.router.navigate(['/roominfo'], {
-      queryParams: {
-        room: this.userData.roomNumber,
-        roomStay: this.userData.roomStay1,
-        roomInbound: this.userData.roomInbound,
-      },
-    });
-  }
-
   goToTravelInfo() {
     this.router.navigate(['/travelinfo']);
   }
@@ -455,8 +409,8 @@ export class UserDashboardComponent implements OnInit {
   goToBusInfo() {
     this.router.navigate(['/businfo'], {
       queryParams: {
-        busInbound: this.userData.flight.busInbound,
-        busOutbound: this.userData.flight.busOutbound,
+        busInbound: this.userData.bus.busInbound,
+        busOutbound: this.userData.bus.busOutbound,
       },
     });
   }
@@ -490,6 +444,36 @@ export class UserDashboardComponent implements OnInit {
     const hasHistory = window.history.length > 1;
     if (hasHistory) this.location.back();
     else this.router.navigate(['/events']);
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  //                       Helpers
+  // ──────────────────────────────────────────────────────────────
+  private cleanOrEmpty(v: any): string {
+    return (v ?? '').toString().trim();
+  }
+
+  private cleanOrDash(v: any): string {
+    const s = this.cleanOrEmpty(v);
+    return s ? s : '—';
+  }
+
+  private normalizeMobile(mobile: string): string {
+    let digits = (mobile || '').replace(/\D/g, '');
+    if (digits.length < 10) return '';
+    if (digits.length > 10) digits = digits.substring(digits.length - 10);
+    return digits;
+  }
+
+  private pickString(obj: any, keys: string[]): string {
+    for (const k of keys) {
+      const v = obj?.[k];
+      if (v !== undefined && v !== null) {
+        const s = v.toString().trim();
+        if (s) return s;
+      }
+    }
+    return '';
   }
 
   getInitials(name: string): string {

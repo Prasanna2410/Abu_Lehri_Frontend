@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class QuizService {
 
-  private BASE_URL = 'http://192.168.1.46:8080/api/quiz';
+  private BASE_URL = 'https://registration.lehriratnasangh.live/api/quiz';
 
   constructor(private http: HttpClient) {}
 

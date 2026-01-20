@@ -27,8 +27,9 @@ export class UserProfileComponent implements OnInit {
   initials = 'JJ'
   profilePhotoUrl: string | null = null
 
-  // ✅ Use your backend base URL for LOCAL
-  private API_BASE = 'https://api.shreesanghutsav.com'
+  // ✅ Normalize base URL to avoid trailing slash -> prevents "//api/..." URLs
+  private API_BASE_RAW = 'https://registration.lehriratnasangh.live'
+  private API_BASE = this.API_BASE_RAW.replace(/\/+$/, '')
 
   constructor(
     private http: HttpClient,
@@ -71,12 +72,15 @@ export class UserProfileComponent implements OnInit {
         this.fullName = name || 'User'
         this.initials = this.getInitials(this.fullName)
 
-        // ✅ if backend sends profilePhotoUrl, use it
+        // ✅ Build correct photo URL in ALL cases:
+        // - backend sends full URL
+        // - backend sends "profile-images/abc.png"
+        // - backend sends "/opt/.../profile-images/abc.png"
+        // - backend sends "abc.png"
         if (res?.profilePhotoUrl) {
-          this.profilePhotoUrl = this.noCache(res.profilePhotoUrl)
+          this.profilePhotoUrl = this.noCache(this.buildPhotoUrl(res.profilePhotoUrl))
         } else if (res?.profilePhoto) {
-          // ✅ fallback if backend sends filename only
-          this.profilePhotoUrl = this.noCache(`${this.API_BASE}/api/profile/photo/${res.profilePhoto}`)
+          this.profilePhotoUrl = this.noCache(this.buildPhotoUrl(res.profilePhoto))
         } else {
           this.profilePhotoUrl = null
         }
@@ -102,7 +106,6 @@ export class UserProfileComponent implements OnInit {
     const file = input.files[0]
     input.value = '' // ✅ allow selecting same file again
 
-    // quick validations
     if (!file.type.startsWith('image/')) {
       this.errorMessage = 'Please select an image file.'
       return
@@ -127,17 +130,16 @@ export class UserProfileComponent implements OnInit {
 
     this.http.post<UserProfileApiResponse>(url, formData).subscribe({
       next: (res) => {
-        // After upload, refresh UI
         const name = this.buildFullName(res)
         this.fullName = name || this.fullName || 'User'
         this.initials = this.getInitials(this.fullName)
 
         if (res?.profilePhotoUrl) {
-          this.profilePhotoUrl = this.noCache(res.profilePhotoUrl)
+          this.profilePhotoUrl = this.noCache(this.buildPhotoUrl(res.profilePhotoUrl))
         } else if (res?.profilePhoto) {
-          this.profilePhotoUrl = this.noCache(`${this.API_BASE}/api/profile/photo/${res.profilePhoto}`)
+          this.profilePhotoUrl = this.noCache(this.buildPhotoUrl(res.profilePhoto))
         } else {
-          // If backend didn't return it, fallback to re-fetch
+          // fallback to re-fetch
           this.loadProfile()
           return
         }
@@ -194,9 +196,39 @@ export class UserProfileComponent implements OnInit {
     return digits
   }
 
-  // ✅ prevent caching after upload
+  /**
+   * ✅ Converts backend photo field into a valid endpoint URL:
+   * Handles:
+   *  - Full URL
+   *  - Absolute server paths like "/opt/.../profile-images/a.png"
+   *  - Relative paths like "profile-images/a.png"
+   *  - Plain filename "a.png"
+   *
+   * IMPORTANT: Your backend endpoint expects ONLY filename:
+   *   GET /api/profile/photo/{filename}
+   */
+  private buildPhotoUrl(photo: string): string {
+    if (!photo) return ''
+
+    // If backend sends full URL, extract pathname first
+    if (/^https?:\/\//i.test(photo)) {
+      try {
+        photo = new URL(photo).pathname
+      } catch {
+        // ignore
+      }
+    }
+
+    // Extract just the filename from any path
+    const filename = photo.split('/').filter(Boolean).pop() || photo
+
+    return `${this.API_BASE}/api/profile/photo/${filename}`
+  }
+
+  // ✅ prevent caching + collapse accidental double slashes in path (keeps https://)
   private noCache(url: string): string {
-    const sep = url.includes('?') ? '&' : '?'
-    return `${url}${sep}t=${Date.now()}`
+    const safe = url.replace(/([^:]\/)\/+/g, '$1')
+    const sep = safe.includes('?') ? '&' : '?'
+    return `${safe}${sep}t=${Date.now()}`
   }
 }

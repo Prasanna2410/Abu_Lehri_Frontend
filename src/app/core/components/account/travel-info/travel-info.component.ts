@@ -4,28 +4,37 @@ import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { AuthService } from 'src/app/services/auth.service'
 
-interface EventParticipantApiResponse {
+interface ApiResponse<T> {
   code: any
   message: string
-  details: EventParticipantDetails | null
+  data: T | null
 }
 
-interface EventParticipantDetails {
+type UserTrainDetails = {
   mobile?: string
   fullName?: string
 
-  pnrOutbound1?: string | null
-  pnrOutbound2?: string | null
-  pnrReturn1?: string | null
-  pnrReturn2?: string | null
+  trainInboundDate?: string | null
+  trainInboundName?: string | null
+  trainInboundCoach?: string | null
+  trainInboundPnr?: string | null
+  trainInboundNo?: string | number | null
+  trainInboundTime?: string | number | null
+  trainInboundBoarding?: string | null
+  trainInboundSeat?: string | number | null
+
+  kitGiven?: boolean
+  [k: string]: any
 }
 
-type FlightCard = {
-  flightNo: 1 | 2 | 3 | 4
-  title: string
-  route: string
-  airline: string
+type TrainInfoView = {
+  trainName: string
+  trainNumber: string
+  date: string
   time: string
+  boarding: string
+  coach: string
+  seatNumber: string
   pnr: string
 }
 
@@ -35,7 +44,8 @@ type FlightCard = {
   styleUrls: ['./travel-info.component.css'],
 })
 export class TravelInfoComponent implements OnInit {
-  private API_BASE = 'https://192.168.1.46:8080/api/event'
+  private API_BASE = 'https://registration.lehriratnasangh.live/api/event'
+  // private API_BASE = 'https://registration.lehriratnasangh.live/api/event'
 
   mobileNumber = ''
   mobile10 = ''
@@ -44,8 +54,7 @@ export class TravelInfoComponent implements OnInit {
   loading = false
   err = ''
 
-  outboundFlights: FlightCard[] = []
-  inboundFlights: FlightCard[] = []
+  train: TrainInfoView | null = null
 
   constructor(
     private http: HttpClient,
@@ -69,7 +78,7 @@ export class TravelInfoComponent implements OnInit {
       return
     }
 
-    this.loadFlightDetails()
+    this.loadTrainDetails()
   }
 
   goBack() {
@@ -78,119 +87,115 @@ export class TravelInfoComponent implements OnInit {
 
   private normalizeMobile(mobile: string): string {
     let digits = (mobile || '').replace(/\D/g, '')
+    if (digits.length < 10) return ''
     if (digits.length > 10) digits = digits.substring(digits.length - 10)
     return digits
   }
 
-  private hasValidPnr(v?: any): boolean {
-    const s = (v ?? '').toString().trim()
-    if (!s) return false
-    const up = s.toUpperCase()
-    if (s === '—' || s === '-' || up.includes('NO FLIGHT')) return false
-    return true
+  private trimOrEmpty(v: any): string {
+    return (v ?? '').toString().trim()
   }
 
-  private meta(flightNo: 1 | 2 | 3 | 4) {
-    switch (flightNo) {
-      case 1:
-        return {
-          title: 'FLIGHT - 1 - 7.01.2026',
-          route: 'PNQ - AMD',
-          airline: 'Akasa Air - QP 1510',
-          time: '6 PM',
-        }
-      case 2:
-        return {
-          title: 'FLIGHT - 2 - 7.01.2026',
-          route: 'PNQ - AMD',
-          airline: 'Akasa Air - QP 1509',
-          time: '10:10 PM',
-        }
-      case 3:
-        return {
-          title: 'FLIGHT - 3 - 14.01.2026',
-          route: 'AMD - PNQ',
-          airline: 'INDIGO - 6E 699',
-          time: '2:30 AM',
-        }
-      case 4:
-        return {
-          title: 'FLIGHT - 4 - 14.01.2026',
-          route: 'AMD - PNQ',
-          airline: 'Akasa Air - QP 1505',
-          time: '5:35 AM',
-        }
+  private dashIfEmpty(v: any): string {
+    const s = this.trimOrEmpty(v)
+    return s ? s : '—'
+  }
+
+  /** Converts "5.02" -> "5:02", "6.28" -> "6:28", otherwise returns as-is */
+  private formatTime(v: any): string {
+    if (v === null || v === undefined) return '—'
+    const s = this.trimOrEmpty(v)
+    if (!s) return '—'
+
+    if (/^\d+(\.\d+)?$/.test(s) && s.includes('.')) {
+      const [hStr, mStrRaw] = s.split('.')
+      const h = parseInt(hStr, 10)
+      const m = parseInt((mStrRaw || '0').padEnd(2, '0').slice(0, 2), 10)
+      if (!Number.isNaN(h) && !Number.isNaN(m)) {
+        return `${h}:${String(m).padStart(2, '0')}`
+      }
+    }
+    return s
+  }
+
+  private formatDateISOToPretty(iso: string): string {
+    // iso: "2026-01-25"
+    try {
+      const d = new Date(iso)
+      if (Number.isNaN(d.getTime())) return iso
+      return d.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    } catch {
+      return iso
     }
   }
 
-  private loadFlightDetails() {
+  private hasAnyTrainData(d: UserTrainDetails): boolean {
+    const name = this.trimOrEmpty(d?.trainInboundName)
+    const num = this.trimOrEmpty(d?.trainInboundNo)
+    const date = this.trimOrEmpty(d?.trainInboundDate)
+    const time = this.trimOrEmpty(d?.trainInboundTime)
+    const seat = this.trimOrEmpty(d?.trainInboundSeat)
+    const coach = this.trimOrEmpty(d?.trainInboundCoach)
+    const boarding = this.trimOrEmpty(d?.trainInboundBoarding)
+    const pnr = this.trimOrEmpty(d?.trainInboundPnr)
+    return !!(name || num || date || time || seat || coach || boarding || pnr)
+  }
+
+  private loadTrainDetails() {
     this.loading = true
     this.err = ''
-    this.outboundFlights = []
-    this.inboundFlights = []
+    this.train = null
 
-    const url = `${this.API_BASE}/user/${this.mobile10}/flight`
+    const url = `${this.API_BASE}/user/${this.mobile10}/train`
 
-    this.http.get<EventParticipantApiResponse>(url).subscribe({
+    this.http.get<ApiResponse<UserTrainDetails>>(url).subscribe({
       next: (res) => {
         this.loading = false
 
         const ok = String(res?.code) === '200'
-        if (!ok || !res.details) {
-          this.err = 'Flight details not available.'
+        const d = res?.data
+        if (!ok || !d) {
+          this.err = res?.message || 'Train details not available.'
           return
         }
 
-        const d = res.details
-        this.fullName = d.fullName || ''
+        this.fullName = this.dashIfEmpty(d.fullName)
 
-        // ✅ Flight 1
-        if (this.hasValidPnr(d.pnrOutbound1)) {
-          const m = this.meta(1)
-          this.outboundFlights.push({
-            flightNo: 1,
-            ...m,
-            pnr: d.pnrOutbound1!.toString().trim(),
-          })
+        if (!this.hasAnyTrainData(d)) {
+          this.train = null
+          return
         }
 
-        // ✅ Flight 2
-        if (this.hasValidPnr(d.pnrOutbound2)) {
-          const m = this.meta(2)
-          this.outboundFlights.push({
-            flightNo: 2,
-            ...m,
-            pnr: d.pnrOutbound2!.toString().trim(),
-          })
-        }
+        const trainName = this.dashIfEmpty(d.trainInboundName)
+        const trainNumber = this.dashIfEmpty(d.trainInboundNo)
+        const date = d.trainInboundDate ? this.formatDateISOToPretty(d.trainInboundDate) : '—'
+        const time = this.formatTime(d.trainInboundTime)
 
-        // ✅ Flight 3
-        if (this.hasValidPnr(d.pnrReturn1)) {
-          const m = this.meta(3)
-          this.inboundFlights.push({
-            flightNo: 3,
-            ...m,
-            pnr: d.pnrReturn1!.toString().trim(),
-          })
-        }
+        const boarding = this.dashIfEmpty(d.trainInboundBoarding)
+        const coach = this.dashIfEmpty(d.trainInboundCoach)
+        const seatNumber = this.dashIfEmpty(d.trainInboundSeat)
 
-        // ✅ Flight 4
-        if (this.hasValidPnr(d.pnrReturn2)) {
-          const m = this.meta(4)
-          this.inboundFlights.push({
-            flightNo: 4,
-            ...m,
-            pnr: d.pnrReturn2!.toString().trim(),
-          })
-        }
+        // IMPORTANT: your API returns "" for pnr sometimes -> show —
+        const pnr = this.dashIfEmpty(d.trainInboundPnr)
 
-        // Sort just in case
-        this.outboundFlights.sort((a, b) => a.flightNo - b.flightNo)
-        this.inboundFlights.sort((a, b) => a.flightNo - b.flightNo)
+        this.train = {
+          trainName,
+          trainNumber,
+          date,
+          time,
+          boarding,
+          coach,
+          seatNumber,
+          pnr,
+        }
       },
       error: () => {
         this.loading = false
-        this.err = 'Unable to fetch flight details.'
+        this.err = 'Unable to fetch train details.'
       },
     })
   }

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">RRPG Sangh</string>
-    <string name="title_activity_main">RRPG Sangh</string>
+    <string name="app_name">Abu Lehri Ratna Sangh Utsav</string>
+    <string name="title_activity_main">Abu Lehri Ratna Sangh Utsav</string>
     <string name="package_name">com.shreesangh.utsav</string>
     <string name="custom_url_scheme">com.shreesangh.utsav</string>
 </resources>

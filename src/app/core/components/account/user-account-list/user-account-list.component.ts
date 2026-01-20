@@ -70,7 +70,7 @@ interface EventFamiliesGroup {
   styleUrls: ['./user-account-list.component.css']
 })
 export class UserAccountListComponent implements OnInit, OnDestroy {
-  private baseUrl = 'https://192.168.1.46:8080/api/admin';
+  private baseUrl = 'https://registration.lehriratnasangh.live/api/admin';
   private tokenSubscription?: Subscription;
   userSessionDetails: userSessionDetails | null | undefined;
   allRegisteredFamilies: EventFamiliesGroup[] = [];

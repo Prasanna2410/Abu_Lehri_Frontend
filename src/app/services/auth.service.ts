@@ -14,7 +14,7 @@ import { Preferences } from '@capacitor/preferences';
 export class AuthService {
   private resourcesAccess: resourcePermission[] = [];
 
-  private apiUrl = 'https://192.168.1.46:8080/api/auth';
+  private apiUrl = 'https://registration.lehriratnasangh.live/api/auth';
 
   // persistent keys
   private readonly KEY_USER_DETAILS = 'UserDetails';

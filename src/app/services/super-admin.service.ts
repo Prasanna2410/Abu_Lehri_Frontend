@@ -11,6 +11,6 @@ export class SuperAdminService {
 
   constructor(private http: HttpClient) { }
     getUsersList(model: userSessionDetails | null | undefined): Observable<GetPersonalInfoRequest>{
-    return this.http.post<GetPersonalInfoRequest>(`https://192.168.1.46:8080/api/auth/getUserList`,model)
+    return this.http.post<GetPersonalInfoRequest>(`https://registration.lehriratnasangh.live/api/auth/getUserList`,model)
   }
 }
